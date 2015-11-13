@@ -30,10 +30,11 @@ pub enum ObjectType {
 	/// not.
 	PU,
 	/// Group objects.
-	///	Objects which do not fit in the above but are detected by hwloc and 
-	/// are useful to take into account for affinity. For instance, some 
+	///
+	/// Objects which do not fit in the above but are detected by hwloc and
+	/// are useful to take into account for affinity. For instance, some
 	/// operating systems expose their arbitrary processors aggregation this
-	/// way. And hwloc may insert such objects to group NUMA nodes according 
+	/// way. And hwloc may insert such objects to group NUMA nodes according
 	/// to their distances.
 	///
 	/// These objects are ignored when they do not bring any structure.
