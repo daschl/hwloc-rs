@@ -2,8 +2,18 @@
 name = "hwloc"
 version = "0.1.0"
 authors = ["Michael Nitschinger <michael@nitschinger.at>"]
+license = "MIT/Apache-2.0"
+keywords = ["hwloc"]
 description = "Rust bindings for the hwloc hardware locality library."
+repository = "https://github.com/daschl/hwloc-rs"
+homepage = "https://github.com/daschl/hwloc-rs"
+build = "build.rs"
+links = "hwloc"
+readme = "README.md"
 
 [dependencies]
 libc = "0.2.1"
 num = "0.1.27"
+
+[build-dependencies]
+pkg-config = "0.3.6"
