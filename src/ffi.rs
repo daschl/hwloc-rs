@@ -1,7 +1,14 @@
-use libc::{c_int, c_uint, c_ulonglong};
+use libc::{c_int, c_uint, c_ulonglong, c_char, c_void};
 use num::{ToPrimitive, FromPrimitive};
+use topology_object::{TopologyObject};
 
 pub enum HwlocTopology {}
+
+#[derive(Debug)]
+pub enum HwlocBitmap {}
+
+pub type CpuSet = HwlocBitmap;
+pub type NodeSet = HwlocBitmap;
 
 #[repr(u32)]
 #[derive(Debug,PartialEq)]
@@ -131,6 +138,7 @@ impl FromPrimitive for TopologyFlag {
     }
 }
 
+
 #[link(name = "hwloc")]
 extern "C" {
 
@@ -151,5 +159,11 @@ extern "C" {
 	pub fn hwloc_get_type_depth(topology: *mut HwlocTopology, object_type: ObjectType) -> c_int;
 	pub fn hwloc_get_depth_type(topology: *mut HwlocTopology, depth: c_uint) -> ObjectType;
 	pub fn hwloc_get_nbobjs_by_depth(topology: *mut HwlocTopology, depth: c_uint) -> c_uint;
-	pub fn hwloc_get_obj_by_depth(topology: *mut HwlocTopology, depth: c_uint, idx: c_uint) -> ObjectType;
+
+
+	pub fn hwloc_get_obj_by_depth(topology: *mut HwlocTopology, depth: c_uint, idx: c_uint) -> *mut TopologyObject;
+
+	// === CPU Binding ===
+	//pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut CpuSet, flags: c_int) -> c_int;
+
 }

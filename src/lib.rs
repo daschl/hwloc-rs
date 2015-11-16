@@ -2,9 +2,12 @@ extern crate libc;
 extern crate num;
 
 mod ffi;
+mod topology_object;
 
-pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
+pub use ffi::{ObjectType, TypeDepthError, TopologyFlag, CpuSet};
 use num::{ToPrimitive, FromPrimitive};
+
+pub use topology_object::{TopologyObject};
 
 pub struct Topology {
 	topo: *mut ffi::HwlocTopology
@@ -86,11 +89,24 @@ impl Topology {
 		}
 	}
 
-	pub fn get_obj_by_depth(&self, depth: u32, idx: u32) -> ObjectType {
+	pub fn get_obj_by_depth(&self, depth: u32, idx: u32) -> &TopologyObject {
 		unsafe {
-			ffi::hwloc_get_obj_by_depth(self.topo, depth, idx)
+			&*ffi::hwloc_get_obj_by_depth(self.topo, depth, idx)
 		}
 	}
+
+	pub fn get_root_obj(&self) -> &TopologyObject {
+		self.get_obj_by_depth(0, 0)
+	}
+
+	//pub fn get_last_cpu_location(&self) {
+	//	let res = unsafe {
+	//		let set = std::ptr::null_mut();
+	//		ffi::hwloc_get_last_cpu_location(self.topo, set, 0)
+	//	};
+	//
+	//	panic!(format!("{:?}", res));
+	//}
 
 }
 
@@ -137,11 +153,19 @@ mod tests {
 	}
 
 	#[test]
-	fn should_get_object_at_depth_and_index() {
+	fn should_get_root_object() {
 		let topo = Topology::new();
 
-		let pu_depth = topo.get_type_depth(ObjectType::Machine).ok().unwrap();
-		assert_eq!(ObjectType::System, topo.get_obj_by_depth(pu_depth, 1));
+		let root_obj = topo.get_root_obj();
+		assert_eq!(ObjectType::Machine, root_obj._type);
+		assert!(root_obj.memory.total_memory > 0);
+	}
+
+	#[test]
+	fn should_get_object_at_depth_and_index() {
+		let topo = Topology::new();
+		let pu_depth = topo.get_type_depth(ObjectType::PU).ok().unwrap();
+		assert_eq!(ObjectType::PU, topo.get_obj_by_depth(pu_depth, 0)._type);
 	}
 
 }
