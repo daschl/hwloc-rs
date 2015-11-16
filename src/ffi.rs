@@ -1,4 +1,4 @@
-use libc::{c_int, c_uint, c_ulonglong, c_char, c_void};
+use libc::{c_int, c_uint, c_ulonglong};
 use num::{ToPrimitive, FromPrimitive};
 use topology_object::{TopologyObject};
 

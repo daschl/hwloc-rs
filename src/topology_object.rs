@@ -113,9 +113,9 @@ pub struct TopologyObjectCacheAttributes {
 
 #[derive(Debug,PartialEq)]
 pub enum TopologyObjectCacheType {
-    HWLOC_OBJ_CACHE_UNIFIED = 0,
-    HWLOC_OBJ_CACHE_DATA = 1,
-    HWLOC_OBJ_CACHE_INSTRUCTION = 2,
+    Unified= 0,
+    Data = 1,
+    Instruction = 2,
 }
 
 #[repr(C)]
@@ -152,8 +152,8 @@ pub struct TopologyObjectBridgeAttributes {
 
 #[derive(Debug,PartialEq)]
 pub enum TopologyObjectBridgeType {
-    HWLOC_OBJ_BRIDGE_HOST = 0,
-    HWLOC_OBJ_BRIDGE_PCI = 1,
+    Host = 0,
+    PCI = 1,
 }
 
 #[repr(C)]
@@ -164,10 +164,10 @@ pub struct TopologyObjectOSDevAttributes {
 
 #[derive(Debug,PartialEq)]
 pub enum TopologyObjectOSDevType {
-    HWLOC_OBJ_OSDEV_BLOCK = 0,
-    HWLOC_OBJ_OSDEV_GPU = 1,
-    HWLOC_OBJ_OSDEV_NETWORK = 2,
-    HWLOC_OBJ_OSDEV_OPENFABRICS = 3,
-    HWLOC_OBJ_OSDEV_DMA = 4,
-    HWLOC_OBJ_OSDEV_COPROC = 5,
+    Block = 0,
+    GPU = 1,
+    Network = 2,
+    OpenFabrics = 3,
+    DMA = 4,
+    COPROC = 5,
 }
