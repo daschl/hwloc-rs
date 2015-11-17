@@ -16,6 +16,23 @@ pub struct Topology {
 
 impl Topology {
 
+	/// Creates a new Topology.
+	///
+	/// If no further customization is needed on init, this method
+	/// represents the main entry point. A topology is returned
+	/// which contains the logical representation of the physical
+	/// hardware.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::Topology;
+	///
+	/// let topology = Topology::new();
+	/// ```
+	///
+	/// Note that the topology implements the Drop trait, so when
+	/// it goes out of scope no further cleanup is necessary.
 	pub fn new() -> Topology {
 		let  mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
 
@@ -27,6 +44,21 @@ impl Topology {
 		Topology { topo: topo }
 	}
 
+	/// Creates a new Topology with custom flags.
+	///
+	/// This method works like `new`, but allows to provide a vector
+	/// of flags which customize the topology discovery process.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology, TopologyFlag};
+	///
+	/// let topology = Topology::with_flags(vec![TopologyFlag::IoDevices]);
+	/// ```
+	///
+	/// Note that the topology implements the Drop trait, so when
+	/// it goes out of scope no further cleanup is necessary.
 	pub fn with_flags(flags: Vec<TopologyFlag>) -> Topology {
 		let  mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
 
@@ -44,7 +76,23 @@ impl Topology {
 		Topology { topo: topo }
 	}
 
-	pub fn get_flags(&self) -> Vec<TopologyFlag> {
+	/// Returns the flags currently set for this topology.
+	///
+	/// Note that the flags are only used during initialization, so this
+	/// method can just be used for debugging purposes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology,TopologyFlag};
+	///
+	/// let default_topology = Topology::new();
+	/// assert_eq!(0, default_topology.flags().len());
+	///
+	/// let topology_with_flags = Topology::with_flags(vec![TopologyFlag::IoDevices]);
+	/// assert_eq!(vec![TopologyFlag::IoDevices], topology_with_flags.flags());
+	/// ```
+	pub fn flags(&self) -> Vec<TopologyFlag> {
 		let stored_flags = unsafe {
 			ffi::hwloc_topology_get_flags(self.topo)
 		};
@@ -56,13 +104,51 @@ impl Topology {
 			.collect::<Vec<TopologyFlag>>()
 	}
 
-	pub fn get_topology_depth(&self) -> u32 {
+	/// Returns the full depth of the topology.
+	///
+	/// In practice, the full depth of the topology equals the depth of the `ObjectType::PU`
+	/// plus one.
+	///
+	/// The full topology depth is useful to know if one needs to manually traverse the
+	/// complete topology.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::Topology;
+	///
+	/// let topology = Topology::new();
+	/// assert!(topology.depth() > 0);
+	/// ```
+	pub fn depth(&self) -> u32 {
 		unsafe {
 			ffi::hwloc_topology_get_depth(self.topo)
 		}
 	}
 
-	pub fn get_type_depth(&self, object_type: ObjectType) -> Result<u32, TypeDepthError> {
+	/// Returns the depth for the given `ObjectType`.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology,ObjectType};
+	///
+	/// let topology = Topology::new();
+	///
+	/// let machine_depth = topology.depth_for_type(ObjectType::Machine).unwrap();
+	/// let pu_depth = topology.depth_for_type(ObjectType::PU).unwrap();
+	/// assert!(machine_depth < pu_depth); 
+	/// ```
+	///
+	/// # Failures
+	///
+	/// If hwloc can't find the depth for the given `ObjectType`, this method will
+	/// return an error from the `TypeDepthError` enum. See this one for more info
+	/// on each specific error.
+	///
+	/// Note that for `ObjectType::Bridge`, `ObjectType::PCIDevice` and `ObjectType::OSDevice`,
+	/// always an error will be returned which signals their virtual depth.
+	pub fn depth_for_type(&self, object_type: ObjectType) -> Result<u32, TypeDepthError> {
 		let result = unsafe {
 			ffi::hwloc_get_type_depth(self.topo, object_type)
 		};
@@ -78,26 +164,118 @@ impl Topology {
 		}
 	}
 
-	pub fn get_depth_type(&self, depth: u32) -> ObjectType {
+	/// Returns the corresponding `ObjectType` for the given depth.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology,ObjectType};
+	///
+	/// let topology = Topology::new();
+	///
+	/// // Load depth for PU to assert against
+	/// let pu_depth = topology.depth_for_type(ObjectType::PU).unwrap();
+	/// // Retrieve the type for the given depth
+	/// assert_eq!(ObjectType::PU, topology.type_at_depth(pu_depth));
+	/// ```
+	///
+	/// # Panics
+	///
+	/// This method will panic if the given depth is larger than the full depth 
+	/// minus one. It can't be negative since its an unsigned integer, but be
+	/// careful with the depth provided in general.
+	pub fn type_at_depth(&self, depth: u32) -> ObjectType {
+		if (depth < 0 || depth > self.depth() - 1) {
+			panic!("The provided depth {} is out of bounds.", depth);
+		}
+
 		unsafe {
 			ffi::hwloc_get_depth_type(self.topo, depth)
 		}
 	}
 
-	pub fn get_nbobjs_by_depth(&self, depth: u32) -> u32 {
+	/// Returns the number of objects at the given depth.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::Topology;
+	///
+	/// let topology = Topology::new();
+	///
+	/// let topo_depth = topology.depth();
+	/// assert!(topology.size_at_depth(topo_depth - 1) > 0);
+	/// ```
+	///
+	/// # Panics
+	///
+	/// This method will panic if the given depth is larger than the full depth 
+	/// minus one. It can't be negative since its an unsigned integer, but be
+	/// careful with the depth provided in general.
+	pub fn size_at_depth(&self, depth: u32) -> u32 {
+		if (depth < 0 || depth > self.depth() - 1) {
+			panic!("The provided depth {} is out of bounds.", depth);
+		}
+
 		unsafe {
 			ffi::hwloc_get_nbobjs_by_depth(self.topo, depth)
 		}
 	}
 
-	pub fn get_obj_by_depth(&self, depth: u32, idx: u32) -> &TopologyObject {
-		unsafe {
-			&*ffi::hwloc_get_obj_by_depth(self.topo, depth, idx)
-		}
+	/// Returns the `TopologyObject` at the root of the topology.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology,TopologyObject};
+	///
+	/// let topology = Topology::new();
+	///
+	/// assert_eq!(topology.type_at_root(), topology.object_at_root()._type);
+	/// ```
+	pub fn object_at_root(&self) -> &TopologyObject {
+		self.objects_at_depth(0).first().unwrap()
 	}
 
-	pub fn get_root_obj(&self) -> &TopologyObject {
-		self.get_obj_by_depth(0, 0)
+	/// Returns the `ObjectType` at the root of the topology.
+	///
+	/// This method is a convenient shorthand for `type_at_depth(0)`.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use hwloc::{Topology,ObjectType};
+	///
+	/// let topology = Topology::new();
+	///
+	/// let root_type = topology.type_at_root();
+	/// let depth_type = topology.type_at_depth(0);
+	/// assert_eq!(root_type, depth_type);
+	/// ```
+	pub fn type_at_root(&self) -> ObjectType {
+		self.type_at_depth(0)
+	}
+
+	/// Returns all `TopologyObjects` with the given `ObjectType`.
+	pub fn objects_with_type(&self, object_type: ObjectType) -> Result<Vec<&TopologyObject>, TypeDepthError> {
+		match self.depth_for_type(object_type) {
+			Ok(depth) => Ok(self.objects_at_depth(depth)),
+			Err(TypeDepthError::TypeDepthOSDevice) => Ok(self.objects_at_depth(-5)),
+			Err(TypeDepthError::TypeDepthPCIDevice) => Ok(self.objects_at_depth(-4)),
+			Err(TypeDepthError::TypeDepthBridge) => Ok(self.objects_at_depth(-3)),
+			Err(e) => Err(e)
+		}
+
+		// TODO: Fix the -x stuff on the unsigned part in a sane way across the code
+	}
+
+	pub fn objects_at_depth(&self, depth: u32) -> Vec<&TopologyObject>  {
+		let size = self.size_at_depth(depth);
+		(0..size).map(|idx| {
+			unsafe {
+				&*ffi::hwloc_get_obj_by_depth(self.topo, depth, idx)
+			}
+		}).collect::<Vec<&TopologyObject>>()
 	}
 
 	//pub fn get_last_cpu_location(&self) {
@@ -129,44 +307,37 @@ mod tests {
 	#[test]
 	fn should_set_and_get_flags() {
 		let topo = Topology::with_flags(vec![TopologyFlag::WholeSystem, TopologyFlag::IoBridges]);
-		assert_eq!(vec![TopologyFlag::WholeSystem, TopologyFlag::IoBridges], topo.get_flags());
+		assert_eq!(vec![TopologyFlag::WholeSystem, TopologyFlag::IoBridges], topo.flags());
 	}
 
 	#[test]
 	fn should_get_topology_depth() {
 		let topo = Topology::new();
-		assert!(topo.get_topology_depth() > 0);
+		assert!(topo.depth() > 0);
 	}
 
 	#[test]
 	fn should_match_types_and_their_depth() {
 		let topo = Topology::new();
 
-		let pu_depth = topo.get_type_depth(ObjectType::PU).ok().unwrap();
+		let pu_depth = topo.depth_for_type(ObjectType::PU).ok().unwrap();
 		assert!(pu_depth > 0);
-		assert_eq!(ObjectType::PU, topo.get_depth_type(pu_depth));
+		assert_eq!(ObjectType::PU, topo.type_at_depth(pu_depth));
 	}
 
 	#[test]
 	fn should_get_nbobjs_by_depth() {
 		let topo = Topology::new();
-		assert!(topo.get_nbobjs_by_depth(1) > 0);
+		assert!(topo.size_at_depth(1) > 0);
 	}
 
 	#[test]
 	fn should_get_root_object() {
 		let topo = Topology::new();
 
-		let root_obj = topo.get_root_obj();
+		let root_obj = topo.object_at_root();
 		assert_eq!(ObjectType::Machine, root_obj._type);
 		assert!(root_obj.memory.total_memory > 0);
-	}
-
-	#[test]
-	fn should_get_object_at_depth_and_index() {
-		let topo = Topology::new();
-		let pu_depth = topo.get_type_depth(ObjectType::PU).ok().unwrap();
-		assert_eq!(ObjectType::PU, topo.get_obj_by_depth(pu_depth, 0)._type);
 	}
 
 }
