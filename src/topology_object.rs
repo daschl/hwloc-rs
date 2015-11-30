@@ -8,22 +8,22 @@ use ffi::{ObjectType, CpuSet, NodeSet};
 #[derive(Debug,PartialEq)]
 pub struct TopologyObject {
     object_type: ObjectType,
-    os_index: c_uint, // todo: getter
+    os_index: c_uint,
     name: *mut c_char,
     memory: TopologyObjectMemory,
     attr: *mut TopologyObjectAttributes, // todo: getter
-    depth: c_uint, // todo: getter
-    logical_index: c_uint, // todo: getter
-    next_cousin: *mut TopologyObject, // todo: getter
-    prev_cousin: *mut TopologyObject, // todo: getter
+    depth: c_uint,
+    logical_index: c_uint,
+    next_cousin: *mut TopologyObject,
+    prev_cousin: *mut TopologyObject,
     parent: *mut TopologyObject, // todo: getter
     sibling_rank: c_uint, // todo: getter
     next_sibling: *mut TopologyObject, // todo: getter
     prev_sibling: *mut TopologyObject, // todo: getter
     arity: c_uint, // todo: getter
     children: *mut *mut TopologyObject, // todo: getter
-    first_child: *mut TopologyObject, // todo: getter
-    last_child: *mut TopologyObject, // todo: getter
+    first_child: *mut TopologyObject,
+    last_child: *mut TopologyObject,
     symmetric_subtree: c_int, // todo: getter
     io_arity: c_uint, // todo: getter
     io_first_child: *mut TopologyObject, // todo: getter
@@ -43,6 +43,7 @@ pub struct TopologyObject {
 }
 
 impl TopologyObject {
+    
     /// The type of the object.
     pub fn object_type(&self) -> ObjectType {
         self.object_type.clone()
@@ -65,6 +66,67 @@ impl TopologyObject {
     pub fn name(&self) -> String {
         let c_str = unsafe { CString::from_raw(self.name) };
         c_str.to_str().unwrap().to_string()
+    }
+
+    /// Vertical index in the hierarchy.
+    ///
+    /// If the topology is symmetric, this is equal to the parent 
+    /// depth plus one, and also equal to the number of parent/child 
+    /// links from the root object to here.
+    pub fn depth(&self) -> u32 {
+        self.depth
+    }
+
+    /// Horizontal index in the whole list of similar objects, hence guaranteed 
+    /// unique across the entire machine.
+    ///
+    /// Could be a "cousin_rank" since it's the rank within the "cousin" list below.
+    pub fn logical_index(&self) -> u32 {
+        self.logical_index
+    }
+
+    /// Next object of same type and depth.
+    pub fn next_cousin(&self) -> Option<&TopologyObject> {
+        unsafe { 
+            if self.next_cousin.is_null() {
+                None
+            } else {
+                Some(&*self.next_cousin)
+            }
+        }
+    }
+
+    /// Previous object of same type and depth.
+    pub fn prev_cousin(&self) -> Option<&TopologyObject> {
+        unsafe { 
+            if self.prev_cousin.is_null() {
+                None
+            } else {
+                Some(&*self.prev_cousin)
+            }
+        }
+    }
+
+    /// First child of the next depth.
+    pub fn first_child(&self) -> Option<&TopologyObject> {
+        unsafe { 
+            if self.first_child.is_null() {
+                None
+            } else {
+                Some(&*self.first_child)
+            }
+        }
+    }
+
+    /// Last child of the next depth.
+    pub fn last_child(&self) -> Option<&TopologyObject> {
+        unsafe { 
+            if self.last_child.is_null() {
+                None
+            } else {
+                Some(&*self.last_child)
+            }
+        }
     }
 }
 

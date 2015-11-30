@@ -338,6 +338,15 @@ mod tests {
 		let root_obj = topo.object_at_root();
 		assert_eq!(ObjectType::Machine, root_obj.object_type());
 		assert!(root_obj.memory().total_memory() > 0);
+		assert_eq!(0, root_obj.memory().local_memory());
+		assert_eq!(0, root_obj.depth());
+		assert_eq!(0, root_obj.logical_index());
+		assert_eq!(None, root_obj.next_cousin());
+		assert_eq!(None, root_obj.prev_cousin());
+		assert!(root_obj.first_child().is_some());
+		assert!(root_obj.last_child().is_some());
+		//panic!(format!("{:?}", root_obj.next_cousin()));
+		//panic!(format!("{:?}", root_obj.first_child()));
 	}
 
 }
