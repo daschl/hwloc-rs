@@ -8,7 +8,7 @@ mod topology_object;
 pub use ffi::{ObjectType, TypeDepthError, TopologyFlag, CpuSet};
 use num::{ToPrimitive, FromPrimitive};
 
-pub use topology_object::{TopologyObject};
+pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
 pub struct Topology {
 	topo: *mut ffi::HwlocTopology
@@ -185,7 +185,7 @@ impl Topology {
 	/// minus one. It can't be negative since its an unsigned integer, but be
 	/// careful with the depth provided in general.
 	pub fn type_at_depth(&self, depth: u32) -> ObjectType {
-		if (depth < 0 || depth > self.depth() - 1) {
+		if depth > self.depth() - 1 {
 			panic!("The provided depth {} is out of bounds.", depth);
 		}
 
@@ -213,7 +213,7 @@ impl Topology {
 	/// minus one. It can't be negative since its an unsigned integer, but be
 	/// careful with the depth provided in general.
 	pub fn size_at_depth(&self, depth: u32) -> u32 {
-		if (depth < 0 || depth > self.depth() - 1) {
+		if depth > self.depth() - 1 {
 			panic!("The provided depth {} is out of bounds.", depth);
 		}
 
@@ -231,7 +231,7 @@ impl Topology {
 	///
 	/// let topology = Topology::new();
 	///
-	/// assert_eq!(topology.type_at_root(), topology.object_at_root()._type);
+	/// assert_eq!(topology.type_at_root(), topology.object_at_root().object_type());
 	/// ```
 	pub fn object_at_root(&self) -> &TopologyObject {
 		self.objects_at_depth(0).first().unwrap()
@@ -336,8 +336,8 @@ mod tests {
 		let topo = Topology::new();
 
 		let root_obj = topo.object_at_root();
-		assert_eq!(ObjectType::Machine, root_obj._type);
-		assert!(root_obj.memory.total_memory > 0);
+		assert_eq!(ObjectType::Machine, root_obj.object_type());
+		assert!(root_obj.memory().total_memory() > 0);
 	}
 
 }

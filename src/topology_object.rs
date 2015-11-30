@@ -1,51 +1,92 @@
 use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_uchar};
+use std::ffi::CString;
+use std::str::from_utf8;
+
 use ffi::{ObjectType, CpuSet, NodeSet};
 
 #[repr(C)]
 #[derive(Debug,PartialEq)]
 pub struct TopologyObject {
-    pub _type: ObjectType,
-    pub os_index: c_uint,
-    pub name: *mut c_char,
-    pub memory: TopologyObjectMemory,
-    pub attr: *mut TopologyObjectAttributes,
-    pub depth: c_uint,
-    pub logical_index: c_uint,
-    pub next_cousin: *mut TopologyObject,
-    pub prev_cousin: *mut TopologyObject,
-    pub parent: *mut TopologyObject,
-    pub sibling_rank: c_uint,
-    pub next_sibling: *mut TopologyObject,
-    pub prev_sibling: *mut TopologyObject,
-    pub arity: c_uint,
-    pub children: *mut *mut TopologyObject,
-    pub first_child: *mut TopologyObject,
-    pub last_child: *mut TopologyObject,
-    pub symmetric_subtree: c_int,
-    pub io_arity: c_uint,
-    pub io_first_child: *mut TopologyObject,
-    pub misc_arity: c_uint,
-    pub misc_first_child: *mut TopologyObject,
-    pub cpuset: *mut CpuSet,
-    pub complete_cpuset: *mut CpuSet,
-    pub allowed_cpuset: *mut CpuSet,
-    pub nodeset: *mut NodeSet,
-    pub complete_nodeset: *mut NodeSet,
-    pub allowed_nodeset: *mut NodeSet,
-    pub distances: *mut *mut TopologyObjectDistances,
-    pub distances_count: c_uint,
-    pub infos: *mut TopologyObjectInfo,
-    pub infos_count: c_uint,
-    pub userdata: *mut c_void,
+    object_type: ObjectType,
+    os_index: c_uint, // todo: getter
+    name: *mut c_char,
+    memory: TopologyObjectMemory,
+    attr: *mut TopologyObjectAttributes, // todo: getter
+    depth: c_uint, // todo: getter
+    logical_index: c_uint, // todo: getter
+    next_cousin: *mut TopologyObject, // todo: getter
+    prev_cousin: *mut TopologyObject, // todo: getter
+    parent: *mut TopologyObject, // todo: getter
+    sibling_rank: c_uint, // todo: getter
+    next_sibling: *mut TopologyObject, // todo: getter
+    prev_sibling: *mut TopologyObject, // todo: getter
+    arity: c_uint, // todo: getter
+    children: *mut *mut TopologyObject, // todo: getter
+    first_child: *mut TopologyObject, // todo: getter
+    last_child: *mut TopologyObject, // todo: getter
+    symmetric_subtree: c_int, // todo: getter
+    io_arity: c_uint, // todo: getter
+    io_first_child: *mut TopologyObject, // todo: getter
+    misc_arity: c_uint, // todo: getter
+    misc_first_child: *mut TopologyObject, // todo: getter
+    cpuset: *mut CpuSet, // todo: getter
+    complete_cpuset: *mut CpuSet, // todo: getter
+    allowed_cpuset: *mut CpuSet, // todo: getter
+    nodeset: *mut NodeSet, // todo: getter
+    complete_nodeset: *mut NodeSet, // todo: getter
+    allowed_nodeset: *mut NodeSet, // todo: getter
+    distances: *mut *mut TopologyObjectDistances, // todo: getter
+    distances_count: c_uint, // todo: getter
+    infos: *mut TopologyObjectInfo, // todo: getter
+    infos_count: c_uint, // todo: getter
+    userdata: *mut c_void, // todo: getter
+}
+
+impl TopologyObject {
+    /// The type of the object.
+    pub fn object_type(&self) -> ObjectType {
+        self.object_type.clone()
+    }
+
+    /// The memory attributes of the object.
+    pub fn memory(&self) -> &TopologyObjectMemory {
+        &self.memory
+    }
+
+    /// The OS-provided physical index number.
+    ///
+    /// It is not guaranteed unique across the entire machine, 
+    /// except for PUs and NUMA nodes.
+    pub fn os_index(&self) -> u32 {
+        self.os_index
+    }
+
+    /// The name of the object, if set.
+    pub fn name(&self) -> String {
+        let c_str = unsafe { CString::from_raw(self.name) };
+        c_str.to_str().unwrap().to_string()
+    }
 }
 
 #[repr(C)]
 #[derive(Debug,PartialEq)]
 pub struct TopologyObjectMemory {
-    pub total_memory: c_ulonglong,
-    pub local_memory: c_ulonglong,
-    pub page_types_len: c_uint,
-    pub page_types: *mut TopologyObjectMemoryPageType,
+    total_memory: c_ulonglong,
+    local_memory: c_ulonglong,
+    page_types_len: c_uint, // todo: getter
+    page_types: *mut TopologyObjectMemoryPageType, // todo: getter
+}
+
+impl TopologyObjectMemory {
+    /// The total memory (in bytes) in this object and its children.
+    pub fn total_memory(&self) -> u64 {
+        self.total_memory
+    }
+
+    /// The local memory (in bytes) in this object.
+    pub fn local_memory(&self) -> u64 {
+        self.local_memory
+    }
 }
 
 #[repr(C)]

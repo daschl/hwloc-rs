@@ -11,7 +11,7 @@ pub type CpuSet = HwlocBitmap;
 pub type NodeSet = HwlocBitmap;
 
 #[repr(u32)]
-#[derive(Debug,PartialEq)]
+#[derive(Debug,PartialEq,Clone)]
 pub enum ObjectType {
 	/// The whole system that is accessible to hwloc. That may comprise several 
 	/// machines in SSI systems like Kerrighed.
@@ -76,40 +76,47 @@ pub enum ObjectType {
 
 #[derive(Debug,PartialEq)]
 pub enum TypeDepthError {
-	/// HWLOC returned a depth error which is not known to the rust binding.
-	UnkownTypeDepthError,
 	/// No object of given type exists in the topology.
-	TypeDepthUnknown,
+	TypeDepthUnknown = -1,
 	/// Objects of given type exist at different depth in the topology.
-	TypeDepthMultiple,
+	TypeDepthMultiple = -2,
 	/// Virtual depth for bridge object level.
-	TypeDepthBridge,
+	TypeDepthBridge = -3,
 	/// Virtual depth for PCI device object level.
-	TypeDepthPCIDevice,
+	TypeDepthPCIDevice = -4,
 	/// Virtual depth for software device object level.
-	TypeDepthOSDevice,
+	TypeDepthOSDevice = -5,
+	/// HWLOC returned a depth error which is not known to the rust binding.
+	UnkownTypeDepthError = -99,
 }
+
+const TOPOLOGY_FLAG_WHOLE_SYSTEM: i64 = 1;
+const TOPOLOGY_FLAG_IS_THIS_SYSTEM: i64 = 2;
+const TOPOLOGY_FLAG_IO_DEVICES: i64 = 4;
+const TOPOLOGY_FLAG_IO_BRIDGES: i64 = 8;
+const TOPOLOGY_FLAG_WHOLE_IO: i64 = 16;
+const TOPOLOGY_FLAG_I_CACHES: i64 = 32;
 
 #[derive(Debug,PartialEq)]
 pub enum TopologyFlag {
-	WholeSystem,
-	IsThisSystem,
-	IoDevices,
-	IoBridges,
-	WholeIo,
-	ICaches,
+	WholeSystem = TOPOLOGY_FLAG_WHOLE_SYSTEM as isize,
+	IsThisSystem = TOPOLOGY_FLAG_IS_THIS_SYSTEM as isize,
+	IoDevices = TOPOLOGY_FLAG_IO_DEVICES as isize,
+	IoBridges = TOPOLOGY_FLAG_IO_BRIDGES as isize,
+	WholeIo = TOPOLOGY_FLAG_WHOLE_IO as isize,
+	ICaches = TOPOLOGY_FLAG_I_CACHES as isize,
 }
 
 impl ToPrimitive for TopologyFlag {
 	
 	fn to_i64(&self) -> Option<i64> {
 		match *self {
-			TopologyFlag::WholeSystem => Some(1),
-			TopologyFlag::IsThisSystem => Some(2),
-			TopologyFlag::IoDevices => Some(4),
-			TopologyFlag::IoBridges => Some(8),
-			TopologyFlag::WholeIo => Some(16),
-			TopologyFlag::ICaches => Some(32),
+			TopologyFlag::WholeSystem => Some(TopologyFlag::WholeSystem as i64),
+			TopologyFlag::IsThisSystem => Some(TopologyFlag::IsThisSystem as i64),
+			TopologyFlag::IoDevices => Some(TopologyFlag::IoDevices as i64),
+			TopologyFlag::IoBridges => Some(TopologyFlag::IoBridges as i64),
+			TopologyFlag::WholeIo => Some(TopologyFlag::WholeIo as i64),
+			TopologyFlag::ICaches => Some(TopologyFlag::ICaches as i64),
 		}
 	}
 
@@ -123,12 +130,12 @@ impl FromPrimitive for TopologyFlag {
 
 	fn from_i64(n: i64) -> Option<Self> {
 		match n {
-			1 => Some(TopologyFlag::WholeSystem),
-			2 => Some(TopologyFlag::IsThisSystem),
-			4 => Some(TopologyFlag::IoDevices),
-			8 => Some(TopologyFlag::IoBridges),
-			16 => Some(TopologyFlag::WholeIo),
-			32 => Some(TopologyFlag::ICaches),
+			TOPOLOGY_FLAG_WHOLE_SYSTEM => Some(TopologyFlag::WholeSystem),
+			TOPOLOGY_FLAG_IS_THIS_SYSTEM => Some(TopologyFlag::IsThisSystem),
+			TOPOLOGY_FLAG_IO_DEVICES => Some(TopologyFlag::IoDevices),
+			TOPOLOGY_FLAG_IO_BRIDGES => Some(TopologyFlag::IoBridges),
+			TOPOLOGY_FLAG_WHOLE_IO => Some(TopologyFlag::WholeIo),
+			TOPOLOGY_FLAG_I_CACHES => Some(TopologyFlag::ICaches),
 			_ => None,
 		}
 	}
@@ -165,5 +172,19 @@ extern "C" {
 
 	// === CPU Binding ===
 	//pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut CpuSet, flags: c_int) -> c_int;
+
+}
+
+#[cfg(test)]
+mod tests {
+
+	use super::*;
+	use num::{ToPrimitive, FromPrimitive};
+
+	#[test]
+	fn should_convert_flag_to_primitive() {
+		assert_eq!(1, TopologyFlag::WholeSystem as u64);
+		assert_eq!(16, TopologyFlag::WholeIo as u64);
+	}
 
 }
