@@ -179,7 +179,6 @@ extern "C" {
 mod tests {
 
 	use super::*;
-	use num::{ToPrimitive, FromPrimitive};
 
 	#[test]
 	fn should_convert_flag_to_primitive() {

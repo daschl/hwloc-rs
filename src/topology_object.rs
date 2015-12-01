@@ -4,7 +4,6 @@ use std::ffi::CString;
 use ffi::{ObjectType, CpuSet, NodeSet};
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObject {
     object_type: ObjectType,
     os_index: c_uint,
@@ -146,7 +145,6 @@ impl TopologyObject {
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectMemory {
     total_memory: c_ulonglong,
     local_memory: c_ulonglong,
@@ -167,21 +165,18 @@ impl TopologyObjectMemory {
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectMemoryPageType {
-    pub size: c_ulonglong,
-    pub count: c_ulonglong,
+    size: c_ulonglong,
+    count: c_ulonglong,
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectInfo {
-    pub name: *mut c_char,
-    pub value: *mut c_char,
+    name: *mut c_char,
+    value: *mut c_char,
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectDistances {
     relative_depth: c_uint,
     nbobjs: c_uint,
@@ -222,9 +217,8 @@ impl TopologyObjectDistances {
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectAttributes {
-    pub _bindgen_data_: [u64; 5usize],
+    _bindgen_data_: [u64; 5usize],
 }
 
 impl TopologyObjectAttributes {
@@ -251,16 +245,15 @@ impl TopologyObjectAttributes {
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectCacheAttributes {
-    pub size: c_ulonglong,
-    pub depth: c_uint,
-    pub linesize: c_uint,
-    pub associativity: c_int,
-    pub _type: TopologyObjectCacheType,
+    size: c_ulonglong,
+    depth: c_uint,
+    linesize: c_uint,
+    associativity: c_int,
+    _type: TopologyObjectCacheType,
 }
 
-#[derive(Debug,PartialEq)]
+#[repr(C)]
 pub enum TopologyObjectCacheType {
     Unified= 0,
     Data = 1,
@@ -268,50 +261,46 @@ pub enum TopologyObjectCacheType {
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectGroupAttributes {
-    pub depth: c_uint,
+    depth: c_uint,
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectPCIDevAttributes {
-    pub domain: c_ushort,
-    pub bus: c_uchar,
-    pub dev: c_uchar,
-    pub func: c_uchar,
-    pub class_id: c_ushort,
-    pub vendor_id: c_ushort,
-    pub device_id: c_ushort,
-    pub subvendor_id: c_ushort,
-    pub subdevice_id: c_ushort,
-    pub revision: c_uchar,
-    pub linkspeed: c_float,
+    domain: c_ushort,
+    bus: c_uchar,
+    dev: c_uchar,
+    func: c_uchar,
+    class_id: c_ushort,
+    vendor_id: c_ushort,
+    device_id: c_ushort,
+    subvendor_id: c_ushort,
+    subdevice_id: c_ushort,
+    revision: c_uchar,
+    linkspeed: c_float,
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectBridgeAttributes {
     //pub upstream: Union_Unnamed4,
-    pub upstream_type: TopologyObjectBridgeType,
+    upstream_type: TopologyObjectBridgeType,
     //pub downstream: Union_Unnamed5,
-    pub downstream_type: TopologyObjectBridgeType,
-    pub depth: c_uint,
+    downstream_type: TopologyObjectBridgeType,
+    depth: c_uint,
 }
 
-#[derive(Debug,PartialEq)]
+#[repr(C)]
 pub enum TopologyObjectBridgeType {
     Host = 0,
     PCI = 1,
 }
 
 #[repr(C)]
-#[derive(Debug,PartialEq)]
 pub struct TopologyObjectOSDevAttributes {
-    pub _type: TopologyObjectOSDevType,
+    _type: TopologyObjectOSDevType,
 }
 
-#[derive(Debug,PartialEq)]
+#[repr(C)]
 pub enum TopologyObjectOSDevType {
     Block = 0,
     GPU = 1,
