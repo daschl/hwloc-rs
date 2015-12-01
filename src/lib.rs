@@ -346,7 +346,7 @@ mod tests {
 		assert!(root_obj.first_child().is_some());
 		assert!(root_obj.last_child().is_some());
 		//panic!(format!("{:?}", root_obj.next_cousin()));
-		//panic!(format!("{:?}", root_obj.first_child()));
+		//panic!(format!("{:?}", root_obj.children()));
 	}
 
 }

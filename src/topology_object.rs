@@ -16,12 +16,12 @@ pub struct TopologyObject {
     logical_index: c_uint,
     next_cousin: *mut TopologyObject,
     prev_cousin: *mut TopologyObject,
-    parent: *mut TopologyObject, // todo: getter
-    sibling_rank: c_uint, // todo: getter
-    next_sibling: *mut TopologyObject, // todo: getter
-    prev_sibling: *mut TopologyObject, // todo: getter
-    arity: c_uint, // todo: getter
-    children: *mut *mut TopologyObject, // todo: getter
+    parent: *mut TopologyObject,
+    sibling_rank: c_uint,
+    next_sibling: *mut TopologyObject,
+    prev_sibling: *mut TopologyObject,
+    arity: c_uint,
+    children: *mut *mut TopologyObject,
     first_child: *mut TopologyObject,
     last_child: *mut TopologyObject,
     symmetric_subtree: c_int, // todo: getter
@@ -43,7 +43,7 @@ pub struct TopologyObject {
 }
 
 impl TopologyObject {
-    
+
     /// The type of the object.
     pub fn object_type(&self) -> ObjectType {
         self.object_type.clone()
@@ -85,48 +85,60 @@ impl TopologyObject {
         self.logical_index
     }
 
+    /// This objects index in the parents children list.
+    pub fn sibling_rank(&self) -> u32 {
+        self.sibling_rank
+    }
+
+    /// The number of direct children.
+    pub fn arity(&self) -> u32 {
+        self.arity
+    }
+
+    /// All direct children of this object.
+    pub fn children(&self) -> Vec<&TopologyObject> {
+        (0..self.arity())
+            .map(|i| unsafe { &**self.children.offset(i as isize) })
+            .collect::<Vec<&TopologyObject>>()
+    }
+
     /// Next object of same type and depth.
     pub fn next_cousin(&self) -> Option<&TopologyObject> {
-        unsafe { 
-            if self.next_cousin.is_null() {
-                None
-            } else {
-                Some(&*self.next_cousin)
-            }
-        }
+        self.derefObj(&self.next_cousin)
     }
 
     /// Previous object of same type and depth.
     pub fn prev_cousin(&self) -> Option<&TopologyObject> {
-        unsafe { 
-            if self.prev_cousin.is_null() {
-                None
-            } else {
-                Some(&*self.prev_cousin)
-            }
-        }
+        self.derefObj(&self.prev_cousin)
     }
 
     /// First child of the next depth.
     pub fn first_child(&self) -> Option<&TopologyObject> {
-        unsafe { 
-            if self.first_child.is_null() {
-                None
-            } else {
-                Some(&*self.first_child)
-            }
-        }
+        self.derefObj(&self.first_child)
     }
 
     /// Last child of the next depth.
     pub fn last_child(&self) -> Option<&TopologyObject> {
-        unsafe { 
-            if self.last_child.is_null() {
-                None
-            } else {
-                Some(&*self.last_child)
-            }
-        }
+        self.derefObj(&self.last_child)
+    }
+
+    /// Last child of the next depth.
+    pub fn parent(&self) -> Option<&TopologyObject> {
+       self.derefObj(&self.parent)
+    }
+
+    /// Previous object below the same parent.
+    pub fn prev_sibling(&self) -> Option<&TopologyObject> {
+        self.derefObj(&self.prev_sibling)
+    }
+
+    /// Next object below the same parent.
+    pub fn next_sibling(&self) -> Option<&TopologyObject> {
+        self.derefObj(&self.next_sibling)
+    }
+
+    fn derefObj(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
+        unsafe { if p.is_null() { None } else { Some(&**p) } }
     }
 }
 
@@ -168,11 +180,42 @@ pub struct TopologyObjectInfo {
 #[repr(C)]
 #[derive(Debug,PartialEq)]
 pub struct TopologyObjectDistances {
-    pub relative_depth: c_uint,
-    pub nbobjs: c_uint,
-    pub latency: *mut c_float,
-    pub latency_max: c_float,
-    pub latency_base: c_float,
+    relative_depth: c_uint,
+    nbobjs: c_uint,
+    latency: *mut c_float, // TODO: getter (expose properly)
+    latency_max: c_float,
+    latency_base: c_float,
+}
+
+impl TopologyObjectDistances {
+
+    /// Relative depth of the considered objects below the 
+    /// object containing this distance information.
+    pub fn relative_depth(&self) -> u32 {
+        self.relative_depth
+    }
+
+    /// Number of objects considered in the matrix.
+    ///
+    /// It is the number of descendant objects at relative_depth below
+    /// the containing object.
+    pub fn number_of_objects(&self) -> u32 {
+        self.nbobjs
+    }
+
+    /// The maximal value in the latency matrix.
+    pub fn max_latency(&self) -> f32 {
+        self.latency_max
+    }
+
+    /// The multiplier that should be applied to latency matrix to 
+    /// retrieve the original OS-provided latencies.
+    ///
+    /// Usually 10 on Linux since ACPI SLIT uses 10 for local latency.
+    pub fn base_latency(&self) -> f32 {
+        self.latency_base
+    }
+
 }
 
 #[repr(C)]
