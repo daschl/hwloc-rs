@@ -13,6 +13,7 @@ pub struct TopologyObject {
     attr: *mut TopologyObjectAttributes, // todo: getter
     depth: c_uint,
     logical_index: c_uint,
+    os_level: c_int,
     next_cousin: *mut TopologyObject,
     prev_cousin: *mut TopologyObject,
     parent: *mut TopologyObject,
@@ -23,13 +24,10 @@ pub struct TopologyObject {
     children: *mut *mut TopologyObject,
     first_child: *mut TopologyObject,
     last_child: *mut TopologyObject,
-    symmetric_subtree: c_int, // todo: getter
-    io_arity: c_uint, // todo: getter
-    io_first_child: *mut TopologyObject, // todo: getter
-    misc_arity: c_uint, // todo: getter
-    misc_first_child: *mut TopologyObject, // todo: getter
+    userdata: *mut c_void, 
     cpuset: *mut CpuSet, // todo: getter
     complete_cpuset: *mut CpuSet, // todo: getter
+    online_cpuset: *mut CpuSet, // todo: getter
     allowed_cpuset: *mut CpuSet, // todo: getter
     nodeset: *mut NodeSet, // todo: getter
     complete_nodeset: *mut NodeSet, // todo: getter
@@ -38,7 +36,7 @@ pub struct TopologyObject {
     distances_count: c_uint, // todo: getter
     infos: *mut TopologyObjectInfo, // todo: getter
     infos_count: c_uint, // todo: getter
-    userdata: *mut c_void, // todo: getter
+    symmetric_subtree: c_int,
 }
 
 impl TopologyObject {
@@ -92,6 +90,12 @@ impl TopologyObject {
     /// The number of direct children.
     pub fn arity(&self) -> u32 {
         self.arity
+    }
+
+    /// Set if the subtree of objects below this object is symmetric, which means all 
+    /// children and their children have identical subtrees.
+    pub fn symmetric_subtree(&self) -> bool {
+        self.symmetric_subtree == 1
     }
 
     /// All direct children of this object.

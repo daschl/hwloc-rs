@@ -1,5 +1,4 @@
 language: rust
-sudo: false
 rust:
   - stable
   - beta
@@ -10,7 +9,13 @@ os:
 matrix:
   allow_failures:
     - rust: nightly
+notifications:
+  email:
+    on_success: never
+branches:
+  only:
+    - master
 install:
   - wget http://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.1.tar.gz
   - tar -xzvf hwloc-1.11.1.tar.gz
-  - cd hwloc-1.11.1  && ./configure --prefix=$HOME/hwloc && make && make install
+  - cd hwloc-1.11.1  && ./configure && make && sudo make install
