@@ -1,6 +1,5 @@
 use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_uchar};
 use std::ffi::CString;
-use std::str::from_utf8;
 
 use ffi::{ObjectType, CpuSet, NodeSet};
 
@@ -104,40 +103,40 @@ impl TopologyObject {
 
     /// Next object of same type and depth.
     pub fn next_cousin(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.next_cousin)
+        self.deref_obj(&self.next_cousin)
     }
 
     /// Previous object of same type and depth.
     pub fn prev_cousin(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.prev_cousin)
+        self.deref_obj(&self.prev_cousin)
     }
 
     /// First child of the next depth.
     pub fn first_child(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.first_child)
+        self.deref_obj(&self.first_child)
     }
 
     /// Last child of the next depth.
     pub fn last_child(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.last_child)
+        self.deref_obj(&self.last_child)
     }
 
     /// Last child of the next depth.
     pub fn parent(&self) -> Option<&TopologyObject> {
-       self.derefObj(&self.parent)
+       self.deref_obj(&self.parent)
     }
 
     /// Previous object below the same parent.
     pub fn prev_sibling(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.prev_sibling)
+        self.deref_obj(&self.prev_sibling)
     }
 
     /// Next object below the same parent.
     pub fn next_sibling(&self) -> Option<&TopologyObject> {
-        self.derefObj(&self.next_sibling)
+        self.deref_obj(&self.next_sibling)
     }
 
-    fn derefObj(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
+    fn deref_obj(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
         unsafe { if p.is_null() { None } else { Some(&**p) } }
     }
 }
