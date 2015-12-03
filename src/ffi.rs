@@ -1,14 +1,9 @@
-use libc::{c_int, c_uint, c_ulonglong};
+use libc::{c_int, c_uint, c_ulonglong, c_char};
 use num::{ToPrimitive, FromPrimitive};
 use topology_object::{TopologyObject};
+use bitmap::IntHwlocBitmap;
 
 pub enum HwlocTopology {}
-
-#[derive(Debug)]
-pub enum HwlocBitmap {}
-
-pub type CpuSet = HwlocBitmap;
-pub type NodeSet = HwlocBitmap;
 
 #[repr(u32)]
 #[derive(Debug,PartialEq,Clone)]
@@ -172,6 +167,13 @@ extern "C" {
 
 	// === CPU Binding ===
 	//pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut CpuSet, flags: c_int) -> c_int;
+
+	// === Bitmap Methods ===
+	pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;
+	pub fn hwloc_bitmap_free(bitmap: *mut IntHwlocBitmap);
+	pub fn hwloc_bitmap_list_asprintf(strp: *mut *mut c_char, bitmap: *mut IntHwlocBitmap) -> c_int;
+	pub fn hwloc_bitmap_set(bitmap: *mut IntHwlocBitmap, id: c_uint);
+	pub fn hwloc_bitmap_clr(bitmap: *mut IntHwlocBitmap, id: c_uint);
 
 }
 

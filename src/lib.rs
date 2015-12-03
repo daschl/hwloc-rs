@@ -4,8 +4,11 @@ extern crate num;
 
 mod ffi;
 mod topology_object;
+mod bitmap;
 
-pub use ffi::{ObjectType, TypeDepthError, TopologyFlag, CpuSet};
+pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
+pub use bitmap::IntHwlocBitmap;
+
 use num::{ToPrimitive, FromPrimitive};
 
 pub use topology_object::{TopologyObject, TopologyObjectMemory};
@@ -34,7 +37,7 @@ impl Topology {
 	/// Note that the topology implements the Drop trait, so when
 	/// it goes out of scope no further cleanup is necessary.
 	pub fn new() -> Topology {
-		let  mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
+		let mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
 
 		unsafe {
 			ffi::hwloc_topology_init(&mut topo);
@@ -290,9 +293,7 @@ impl Topology {
 impl Drop for Topology {
 
 	fn drop(&mut self) {
-		unsafe {
-			ffi::hwloc_topology_destroy(self.topo)
-		}
+		unsafe { ffi::hwloc_topology_destroy(self.topo) }
 	}
 
 }

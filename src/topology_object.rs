@@ -1,7 +1,8 @@
 use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_uchar};
 use std::ffi::CString;
 
-use ffi::{ObjectType, CpuSet, NodeSet};
+use ffi::{ObjectType};
+use bitmap::{IntHwlocBitmap, CpuSet};
 
 #[repr(C)]
 pub struct TopologyObject {
@@ -24,13 +25,13 @@ pub struct TopologyObject {
     first_child: *mut TopologyObject,
     last_child: *mut TopologyObject,
     userdata: *mut c_void, 
-    cpuset: *mut CpuSet, // todo: getter
-    complete_cpuset: *mut CpuSet, // todo: getter
-    online_cpuset: *mut CpuSet, // todo: getter
-    allowed_cpuset: *mut CpuSet, // todo: getter
-    nodeset: *mut NodeSet, // todo: getter
-    complete_nodeset: *mut NodeSet, // todo: getter
-    allowed_nodeset: *mut NodeSet, // todo: getter
+    cpuset: *mut IntHwlocBitmap,
+    complete_cpuset: *mut IntHwlocBitmap,
+    online_cpuset: *mut IntHwlocBitmap,
+    allowed_cpuset: *mut IntHwlocBitmap,
+    nodeset: *mut IntHwlocBitmap, // todo: getter
+    complete_nodeset: *mut IntHwlocBitmap, // todo: getter
+    allowed_nodeset: *mut IntHwlocBitmap, // todo: getter
     distances: *mut *mut TopologyObjectDistances, // todo: getter
     distances_count: c_uint, // todo: getter
     infos: *mut TopologyObjectInfo, // todo: getter
@@ -106,42 +107,89 @@ impl TopologyObject {
 
     /// Next object of same type and depth.
     pub fn next_cousin(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.next_cousin)
+        self.deref_topology(&self.next_cousin)
     }
 
     /// Previous object of same type and depth.
     pub fn prev_cousin(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.prev_cousin)
+        self.deref_topology(&self.prev_cousin)
     }
 
     /// First child of the next depth.
     pub fn first_child(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.first_child)
+        self.deref_topology(&self.first_child)
     }
 
     /// Last child of the next depth.
     pub fn last_child(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.last_child)
+        self.deref_topology(&self.last_child)
     }
 
     /// Last child of the next depth.
     pub fn parent(&self) -> Option<&TopologyObject> {
-       self.deref_obj(&self.parent)
+       self.deref_topology(&self.parent)
     }
 
     /// Previous object below the same parent.
     pub fn prev_sibling(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.prev_sibling)
+        self.deref_topology(&self.prev_sibling)
     }
 
     /// Next object below the same parent.
     pub fn next_sibling(&self) -> Option<&TopologyObject> {
-        self.deref_obj(&self.next_sibling)
+        self.deref_topology(&self.next_sibling)
     }
 
-    fn deref_obj(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
+    /// CPUs covered by this object.
+    ///
+    /// This is the set of CPUs for which there are PU objects in the 
+    /// topology under this object, i.e. which are known to be physically 
+    /// contained in this object and known how (the children path between this 
+    /// object and the PU objects).
+    pub fn cpuset(&self) -> Option<CpuSet> {
+        self.deref_cpuset(self.cpuset)
+    }
+
+    /// The complete CPU set of logical processors of this object.
+    ///
+    /// This includes not only the same as the cpuset field, but also the 
+    /// CPUs for which topology information is unknown or incomplete, and the 
+    /// CPUs that are ignored when the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is 
+    /// not set. Thus no corresponding PU object may be found in the topology, 
+    /// because the precise position is undefined. It is however known that it 
+    /// would be somewhere under this object.
+    pub fn complete_cpuset(&self) -> Option<CpuSet> {
+        self.deref_cpuset(self.complete_cpuset)
+    }
+
+    /// The CPU set of online logical processors.
+    ///
+    /// This includes the CPUs contained in this object that are online, 
+    /// i.e. draw power and can execute threads. It may however not be allowed 
+    /// to bind to them due to administration rules, see allowed_cpuset.
+    pub fn online_cpuset(&self) -> Option<CpuSet> {
+        self.deref_cpuset(self.online_cpuset)
+    }
+
+    /// The CPU set of allowed logical processors.
+    ///
+    /// This includes the CPUs contained in this object which are allowed for 
+    /// binding, i.e. passing them to the hwloc binding functions should not 
+    /// return permission errors. This is usually restricted by administration 
+    /// rules. Some of them may however be offline so binding to them may still 
+    /// not be possible, see online_cpuset.
+    pub fn allowed_cpuset(&self) -> Option<CpuSet> {
+        self.deref_cpuset(self.allowed_cpuset)
+    }
+
+    fn deref_topology(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
         unsafe { if p.is_null() { None } else { Some(&**p) } }
     }
+
+    fn deref_cpuset(&self, p: *mut IntHwlocBitmap) -> Option<CpuSet> {
+        if p.is_null() { None } else { Some(CpuSet::from_raw(p)) }
+    }
+
 }
 
 #[repr(C)]
