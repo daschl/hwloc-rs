@@ -173,8 +173,9 @@ extern "C" {
 	pub fn hwloc_bitmap_free(bitmap: *mut IntHwlocBitmap);
 	pub fn hwloc_bitmap_list_asprintf(strp: *mut *mut c_char, bitmap: *mut IntHwlocBitmap) -> c_int;
 	pub fn hwloc_bitmap_set(bitmap: *mut IntHwlocBitmap, id: c_uint);
+	pub fn hwloc_bitmap_set_range(bitmap: *mut IntHwlocBitmap, begin: c_uint, end: c_int);
 	pub fn hwloc_bitmap_clr(bitmap: *mut IntHwlocBitmap, id: c_uint);
-
+	pub fn hwloc_bitmap_clr_range(bitmap: *mut IntHwlocBitmap, begin: c_uint, end: c_int);
 }
 
 #[cfg(test)]

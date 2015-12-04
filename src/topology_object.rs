@@ -2,7 +2,7 @@ use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_ucha
 use std::ffi::CString;
 
 use ffi::{ObjectType};
-use bitmap::{IntHwlocBitmap, CpuSet};
+use bitmap::{IntHwlocBitmap, CpuSet, NodeSet};
 
 #[repr(C)]
 pub struct TopologyObject {
@@ -29,9 +29,9 @@ pub struct TopologyObject {
     complete_cpuset: *mut IntHwlocBitmap,
     online_cpuset: *mut IntHwlocBitmap,
     allowed_cpuset: *mut IntHwlocBitmap,
-    nodeset: *mut IntHwlocBitmap, // todo: getter
-    complete_nodeset: *mut IntHwlocBitmap, // todo: getter
-    allowed_nodeset: *mut IntHwlocBitmap, // todo: getter
+    nodeset: *mut IntHwlocBitmap,
+    complete_nodeset: *mut IntHwlocBitmap,
+    allowed_nodeset: *mut IntHwlocBitmap,
     distances: *mut *mut TopologyObjectDistances, // todo: getter
     distances_count: c_uint, // todo: getter
     infos: *mut TopologyObjectInfo, // todo: getter
@@ -182,12 +182,58 @@ impl TopologyObject {
         self.deref_cpuset(self.allowed_cpuset)
     }
 
+    /// NUMA nodes covered by this object or containing this object.
+    ///
+    /// This is the set of NUMA nodes for which there are NODE objects in the topology under or 
+    // above this object, i.e. which are known to be physically contained in this object or containing 
+    /// it and known how (the children path between this object and the NODE objects).
+    ///
+    /// In the end, these nodes are those that are close to the current object.
+    /// If the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM configuration flag is set, some of these nodes may not 
+    /// be allowed for allocation, see allowed_nodeset.
+    ///
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so the nodeset 
+    /// is full.
+    pub fn nodeset(&self) -> Option<NodeSet> {
+        self.deref_nodeset(self.nodeset)
+    }
+
+    /// The complete NUMA node set of this object,.
+    ///
+    /// This includes not only the same as the nodeset field, but also the NUMA nodes for which topology 
+    /// information is unknown or incomplete, and the nodes that are ignored when the 
+    /// HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is not set. Thus no corresponding NODE object may be found 
+    /// in the topology, because the precise position is undefined. It is however known that it would be 
+    /// somewhere under this object.
+    ///
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so 
+    /// complete_nodeset is full.
+    pub fn complete_nodeset(&self) -> Option<NodeSet> {
+        self.deref_nodeset(self.complete_nodeset)
+    }
+
+    /// The set of allowed NUMA memory nodes.
+    ///
+    /// This includes the NUMA memory nodes contained in this object which are allowed for memory allocation, 
+    /// i.e. passing them to NUMA node-directed memory allocation should not return permission errors. This is 
+    /// usually restricted by administration rules.
+    ///
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so allowed_nodeset 
+    /// is full.
+    pub fn allowed_nodeset(&self) -> Option<NodeSet> {
+        self.deref_nodeset(self.allowed_nodeset)
+    }
+
     fn deref_topology(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
         unsafe { if p.is_null() { None } else { Some(&**p) } }
     }
 
     fn deref_cpuset(&self, p: *mut IntHwlocBitmap) -> Option<CpuSet> {
         if p.is_null() { None } else { Some(CpuSet::from_raw(p)) }
+    }
+
+    fn deref_nodeset(&self, p: *mut IntHwlocBitmap) -> Option<NodeSet> {
+        if p.is_null() { None } else { Some(NodeSet::from_raw(p)) }
     }
 
 }
