@@ -50,6 +50,28 @@ impl HwlocBitmap {
 		unsafe { ffi::hwloc_bitmap_clr_range(self.bitmap, begin, end) }
 	}
 
+	/// The number of indexes that are in the bitmap.
+	pub fn weight(&self) -> i32 {
+		unsafe { ffi::hwloc_bitmap_weight(self.bitmap) }
+	}
+
+	/// Clears the complete bitmap.
+	pub fn clear(&mut self) {
+		unsafe { ffi::hwloc_bitmap_zero(self.bitmap) }
+	}
+
+	/// Checks if this bitmap has set fields.
+	pub fn is_empty(&self) -> bool {
+		let result = unsafe { ffi::hwloc_bitmap_iszero(self.bitmap) };
+		if result == 0 { false } else { true }
+	}
+
+	/// Check if the field with the given id is set.
+	pub fn is_set(&self, id: u32) -> bool {
+		let result = unsafe { ffi::hwloc_bitmap_isset(self.bitmap, id) };
+		if result == 0 { false } else { true }
+	}
+
 }
 
 impl Drop for HwlocBitmap {
@@ -78,17 +100,43 @@ mod tests {
 	use super::*;
 
 	#[test]
+	fn should_check_if_bitmap_is_empty() {
+		let mut bitmap = HwlocBitmap::new();
+
+		assert!(bitmap.is_empty());
+		bitmap.set(1);
+		assert!(!bitmap.is_empty());
+		bitmap.unset(1);
+		assert!(bitmap.is_empty());
+	}
+
+	#[test]
 	fn should_set_and_unset_bitmap_index() {
 		let mut bitmap = HwlocBitmap::new();
 		assert_eq!("", format!("{}", bitmap));
+
+		assert!(bitmap.is_empty());
 
 		bitmap.set(1);
 		bitmap.set(3);
 		bitmap.set(8);
 		assert_eq!("1,3,8", format!("{}", bitmap));
+		assert!(!bitmap.is_empty());
 
 		bitmap.unset(3);
 		assert_eq!("1,8", format!("{}", bitmap));
+		assert!(!bitmap.is_empty());
+	}
+
+	#[test]
+	fn should_check_if_is_set() {
+		let mut bitmap = HwlocBitmap::new();
+
+		assert!(!bitmap.is_set(3));
+		bitmap.set(3);
+		assert!(bitmap.is_set(3));
+		bitmap.unset(3);
+		assert!(!bitmap.is_set(3));
 	}
 
 	#[test]
@@ -107,6 +155,39 @@ mod tests {
 
 		bitmap.unset_range(6, 10);
 		assert_eq!("2-5", format!("{}", bitmap));
+	}
+
+	#[test]
+	fn should_clear_the_bitmap() {
+		let mut bitmap = HwlocBitmap::new();
+
+		assert!(bitmap.is_empty());
+		bitmap.set_range(4, 7);
+		assert!(!bitmap.is_empty());
+		assert!(bitmap.is_set(5));
+
+		bitmap.clear();
+		assert!(!bitmap.is_set(5));
+		assert!(bitmap.is_empty());
+	}
+
+	#[test]
+	fn should_get_weight() {
+		let mut bitmap = HwlocBitmap::new();
+
+		assert_eq!(0, bitmap.weight());
+
+		bitmap.set(9);
+		assert_eq!(1, bitmap.weight());
+
+		bitmap.set_range(2, 5);
+		assert_eq!(5, bitmap.weight());
+
+		bitmap.unset(4);
+		assert_eq!(4, bitmap.weight());
+
+		bitmap.clear();
+		assert_eq!(0, bitmap.weight());
 	}
 
 }

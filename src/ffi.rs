@@ -176,6 +176,11 @@ extern "C" {
 	pub fn hwloc_bitmap_set_range(bitmap: *mut IntHwlocBitmap, begin: c_uint, end: c_int);
 	pub fn hwloc_bitmap_clr(bitmap: *mut IntHwlocBitmap, id: c_uint);
 	pub fn hwloc_bitmap_clr_range(bitmap: *mut IntHwlocBitmap, begin: c_uint, end: c_int);
+
+	pub fn hwloc_bitmap_weight(bitmap: *mut IntHwlocBitmap) -> c_int;
+	pub fn hwloc_bitmap_zero(bitmap: *mut IntHwlocBitmap);
+	pub fn hwloc_bitmap_iszero(bitmap: *mut IntHwlocBitmap) -> c_int;
+	pub fn hwloc_bitmap_isset(bitmap: *mut IntHwlocBitmap, id: c_uint) -> c_int;
 }
 
 #[cfg(test)]
