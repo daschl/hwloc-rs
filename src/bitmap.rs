@@ -4,12 +4,13 @@ use ffi;
 use std::fmt;
 use std::ptr;
 use std::ffi::CStr;
+use std::ops::Not;
 
 pub enum IntHwlocBitmap {}
 
 pub struct HwlocBitmap {
 	bitmap: *mut IntHwlocBitmap,
-	owns_ptr: bool,
+	manage: bool,
 }
 
 pub type CpuSet = HwlocBitmap;
@@ -19,11 +20,11 @@ impl HwlocBitmap {
 
 	pub fn new() -> HwlocBitmap {
 		let int_bitmap = unsafe { ffi::hwloc_bitmap_alloc() };
-		HwlocBitmap { bitmap: int_bitmap, owns_ptr: true }
+		HwlocBitmap { bitmap: int_bitmap, manage: true }
 	}
 
-	pub fn from_raw(bitmap: *mut IntHwlocBitmap) -> HwlocBitmap {
-		HwlocBitmap { bitmap: bitmap, owns_ptr: false }
+	pub fn from_raw(bitmap: *mut IntHwlocBitmap, manage: bool) -> HwlocBitmap {
+		HwlocBitmap { bitmap: bitmap, manage: manage }
 	}
 
 	/// Add index id in bitmap bitmap.
@@ -72,12 +73,53 @@ impl HwlocBitmap {
 		if result == 0 { false } else { true }
 	}
 
+	/// Keep a single index among those set in the bitmap.
+	///
+	/// May be useful before binding so that the process does not have a 
+	/// chance of migrating between multiple logical CPUs in the original mask.
+	pub fn singlify(&mut self) {
+		unsafe { ffi::hwloc_bitmap_singlify(self.bitmap) }
+	}
+
+	/// Inverts the current bitmap.
+	pub fn invert(&mut self) {
+		unsafe { ffi::hwloc_bitmap_not(self.bitmap, self.bitmap) }
+	}
+
+	/// Compute the first index (least significant bit) in bitmap bitmap.
+	///
+	/// returns -1 if no index is set.
+	pub fn first(&self) -> i32 {
+		unsafe { ffi::hwloc_bitmap_first(self.bitmap) }
+	}
+
+	/// Compute the last index (most significant bit) in bitmap bitmap.
+	///
+	/// returns -1 if no index is bitmap, or if the index bitmap is infinite.
+	pub fn last(&self) -> i32 {
+		unsafe { ffi::hwloc_bitmap_last(self.bitmap) }
+	}
+
+}
+
+impl Not for HwlocBitmap {
+	type Output = HwlocBitmap;
+
+	/// Returns a new bitmap which contains the negated values of the current 
+	/// one.
+	fn not(self) -> HwlocBitmap {
+		unsafe {
+			let result = ffi::hwloc_bitmap_alloc();
+			ffi::hwloc_bitmap_not(result, self.bitmap);
+			HwlocBitmap::from_raw(result, true)
+		}
+	}
 }
 
 impl Drop for HwlocBitmap {
 
 	fn drop(&mut self) {
-		if self.owns_ptr {
+		if self.manage {
 			unsafe { ffi::hwloc_bitmap_free(self.bitmap) }
 		}
 	}
@@ -188,6 +230,31 @@ mod tests {
 
 		bitmap.clear();
 		assert_eq!(0, bitmap.weight());
+	}
+
+	#[test]
+	fn should_invert() {
+		let mut bitmap = HwlocBitmap::new();
+		bitmap.set(3);
+
+		assert_eq!("3", format!("{}", bitmap));
+		assert_eq!("0-2,4-", format!("{}", !bitmap));
+	}
+
+	#[test]
+	fn should_singlify() {
+		let mut bitmap = HwlocBitmap::new();
+		bitmap.set_range(0, 127);
+		assert_eq!(128, bitmap.weight());
+
+		bitmap.invert();
+		assert_eq!(-1, bitmap.weight());
+
+		bitmap.singlify();
+		assert_eq!(1, bitmap.weight());
+
+		assert_eq!(128, bitmap.first());
+		assert_eq!(128, bitmap.last());
 	}
 
 }

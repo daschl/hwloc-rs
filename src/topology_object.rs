@@ -229,11 +229,11 @@ impl TopologyObject {
     }
 
     fn deref_cpuset(&self, p: *mut IntHwlocBitmap) -> Option<CpuSet> {
-        if p.is_null() { None } else { Some(CpuSet::from_raw(p)) }
+        if p.is_null() { None } else { Some(CpuSet::from_raw(p, false)) }
     }
 
     fn deref_nodeset(&self, p: *mut IntHwlocBitmap) -> Option<NodeSet> {
-        if p.is_null() { None } else { Some(NodeSet::from_raw(p)) }
+        if p.is_null() { None } else { Some(NodeSet::from_raw(p, false)) }
     }
 
 }
