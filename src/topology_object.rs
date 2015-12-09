@@ -1,7 +1,10 @@
 use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_uchar};
 use std::ffi::CString;
+use std::fmt;
 
 use ffi::{ObjectType};
+use ffi;
+
 use bitmap::{IntHwlocBitmap, CpuSet, NodeSet};
 
 #[repr(C)]
@@ -10,7 +13,7 @@ pub struct TopologyObject {
     os_index: c_uint,
     name: *mut c_char,
     memory: TopologyObjectMemory,
-    attr: *mut TopologyObjectAttributes, // todo: getter
+    attr: *mut TopologyObjectAttributes,
     depth: c_uint,
     logical_index: c_uint,
     os_level: c_int,
@@ -236,6 +239,42 @@ impl TopologyObject {
         if p.is_null() { None } else { Some(NodeSet::from_raw(p, false)) }
     }
 
+    pub fn cache_attributes(&self) -> Option<&TopologyObjectCacheAttributes> {
+        let cache_ptr = unsafe { (*self.attr).cache() };
+        if cache_ptr.is_null() {
+            None
+        } else {
+            unsafe { Some(&*cache_ptr) }
+        }
+    }
+
+}
+
+impl fmt::Display for TopologyObject {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let type_str = CString::new("").unwrap();
+        let type_str_ptr = type_str.into_raw();
+
+        let attr_str = CString::new("").unwrap();
+        let attr_str_ptr = attr_str.into_raw();
+
+        let separator = CString::new("  ").unwrap();
+        let separator_ptr = separator.into_raw();
+
+        unsafe {
+            ffi::hwloc_obj_type_snprintf(type_str_ptr, 64, & *self as *const TopologyObject, false);
+            ffi::hwloc_obj_attr_snprintf(attr_str_ptr, 2048, & *self as *const TopologyObject, separator_ptr, false);
+            
+            CString::from_raw(separator_ptr);
+
+            write!(
+                f, 
+                "{} ({})",
+                CString::from_raw(type_str_ptr).to_str().unwrap(), 
+                CString::from_raw(attr_str_ptr).to_str().unwrap()
+            )
+        }
+    }
 }
 
 #[repr(C)]
@@ -311,7 +350,7 @@ impl TopologyObjectDistances {
 }
 
 #[repr(C)]
-pub struct TopologyObjectAttributes {
+struct TopologyObjectAttributes {
     _bindgen_data_: [u64; 5usize],
 }
 
@@ -340,16 +379,26 @@ impl TopologyObjectAttributes {
 
 #[repr(C)]
 pub struct TopologyObjectCacheAttributes {
-    size: c_ulonglong,
-    depth: c_uint,
-    linesize: c_uint,
-    associativity: c_int,
-    _type: TopologyObjectCacheType,
+    pub size: c_ulonglong,
+    pub depth: c_uint,
+    pub linesize: c_uint,
+    pub associativity: c_int,
+    pub _type: TopologyObjectCacheType,
+}
+
+impl TopologyObjectCacheAttributes {
+    pub fn size(&self) -> u64 {
+        self.size
+    }
+
+    pub fn depth(&self) -> u32 {
+        self.depth
+    }
 }
 
 #[repr(C)]
 pub enum TopologyObjectCacheType {
-    Unified= 0,
+    Unified = 0,
     Data = 1,
     Instruction = 2,
 }

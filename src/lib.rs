@@ -8,6 +8,7 @@ mod bitmap;
 
 pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
 pub use bitmap::IntHwlocBitmap;
+pub use bitmap::CpuSet;
 
 use num::{ToPrimitive, FromPrimitive};
 
@@ -201,7 +202,7 @@ impl Topology {
 	///
 	/// # Examples
 	///
-	/// ```
+	/// ```	
 	/// use hwloc::Topology;
 	///
 	/// let topology = Topology::new();
@@ -279,14 +280,25 @@ impl Topology {
 		}).collect::<Vec<&TopologyObject>>()
 	}
 
-	//pub fn get_last_cpu_location(&self) {
-	//	let res = unsafe {
-	//		let set = std::ptr::null_mut();
-	//		ffi::hwloc_get_last_cpu_location(self.topo, set, 0)
-	//	};
-	//
-	//	panic!(format!("{:?}", res));
-	//}
+	pub fn get_cpubind(&self) -> Option<CpuSet> {
+		let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+		let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
+		if res >= 0 {
+			Some(CpuSet::from_raw(raw_set, true))
+		} else {
+			None
+		}
+	}
+
+	pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
+		let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+		let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
+		if res >= 0 {
+			Some(CpuSet::from_raw(raw_set, true))
+		} else {
+			None
+		}
+	}
 
 }
 
@@ -341,6 +353,13 @@ mod tests {
 		assert_eq!(0, root_obj.logical_index());
 		assert!(root_obj.first_child().is_some());
 		assert!(root_obj.last_child().is_some());
+	}
+
+	#[test]
+	fn should_get_cpubind() {
+		let topo = Topology::new();
+
+		//print!("{}", topo.get_cpubind().unwrap());
 	}
 
 }

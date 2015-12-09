@@ -166,7 +166,8 @@ extern "C" {
 	pub fn hwloc_get_obj_by_depth(topology: *mut HwlocTopology, depth: c_uint, idx: c_uint) -> *mut TopologyObject;
 
 	// === CPU Binding ===
-	//pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut CpuSet, flags: c_int) -> c_int;
+	pub fn hwloc_get_cpubind(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
+	pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 
 	// === Bitmap Methods ===
 	pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;
@@ -184,6 +185,9 @@ extern "C" {
 	pub fn hwloc_bitmap_not(result: *mut IntHwlocBitmap, bitmap: *mut IntHwlocBitmap);
 	pub fn hwloc_bitmap_first(bitmap: *mut IntHwlocBitmap) -> c_int;
 	pub fn hwloc_bitmap_last(bitmap: *mut IntHwlocBitmap) -> c_int;
+
+	pub fn hwloc_obj_type_snprintf(into: *mut c_char, size: c_int, object: *const TopologyObject, verbose: bool) -> c_int;
+	pub fn hwloc_obj_attr_snprintf(into: *mut c_char, size: c_int, object: *const TopologyObject, separator: *const c_char, verbose: bool) -> c_int;
 }
 
 #[cfg(test)]
