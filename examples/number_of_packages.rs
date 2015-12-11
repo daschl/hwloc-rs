@@ -6,7 +6,7 @@ use hwloc::{Topology, ObjectType, TypeDepthError};
 fn main() {
 	let topo = Topology::new();
 
-	let package_depth = topo.depth_for_type(ObjectType::Package);
+	let package_depth = topo.depth_for_type(&ObjectType::Package);
 	match package_depth {
 		Ok(depth) => println!("*** {} package(s)", topo.size_at_depth(depth)),
 		Err(TypeDepthError::TypeDepthUnknown) => println!("*** The number of packages is unknown"),

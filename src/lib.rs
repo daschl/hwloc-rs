@@ -139,8 +139,8 @@ impl Topology {
 	///
 	/// let topology = Topology::new();
 	///
-	/// let machine_depth = topology.depth_for_type(ObjectType::Machine).unwrap();
-	/// let pu_depth = topology.depth_for_type(ObjectType::PU).unwrap();
+	/// let machine_depth = topology.depth_for_type(&ObjectType::Machine).unwrap();
+	/// let pu_depth = topology.depth_for_type(&ObjectType::PU).unwrap();
 	/// assert!(machine_depth < pu_depth); 
 	/// ```
 	///
@@ -152,9 +152,9 @@ impl Topology {
 	///
 	/// Note that for `ObjectType::Bridge`, `ObjectType::PCIDevice` and `ObjectType::OSDevice`,
 	/// always an error will be returned which signals their virtual depth.
-	pub fn depth_for_type(&self, object_type: ObjectType) -> Result<u32, TypeDepthError> {
+	pub fn depth_for_type(&self, object_type: &ObjectType) -> Result<u32, TypeDepthError> {
 		let result = unsafe {
-			ffi::hwloc_get_type_depth(self.topo, object_type)
+			ffi::hwloc_get_type_depth(self.topo, object_type.clone())
 		};
 
 		match result {
@@ -180,7 +180,7 @@ impl Topology {
 	/// let topology = Topology::new();
 	///
 	/// // Load depth for PU to assert against
-	/// let pu_depth = topology.depth_for_type(ObjectType::PU).unwrap();
+	/// let pu_depth = topology.depth_for_type(&ObjectType::PU).unwrap();
 	/// // Retrieve the type for the given depth
 	/// assert_eq!(ObjectType::PU, topology.type_at_depth(pu_depth));
 	/// ```
@@ -263,7 +263,7 @@ impl Topology {
 	}
 
 	/// Returns all `TopologyObjects` with the given `ObjectType`.
-	pub fn objects_with_type(&self, object_type: ObjectType) -> Result<Vec<&TopologyObject>, TypeDepthError> {
+	pub fn objects_with_type(&self, object_type: &ObjectType) -> Result<Vec<&TopologyObject>, TypeDepthError> {
 		match self.depth_for_type(object_type) {
 			Ok(depth) => Ok(self.objects_at_depth(depth)),
 			Err(TypeDepthError::TypeDepthOSDevice) => Ok(self.objects_at_depth(TypeDepthError::TypeDepthOSDevice as u32)),
@@ -333,7 +333,7 @@ mod tests {
 	fn should_match_types_and_their_depth() {
 		let topo = Topology::new();
 
-		let pu_depth = topo.depth_for_type(ObjectType::PU).ok().unwrap();
+		let pu_depth = topo.depth_for_type(&ObjectType::PU).ok().unwrap();
 		assert!(pu_depth > 0);
 		assert_eq!(ObjectType::PU, topo.type_at_depth(pu_depth));
 	}
