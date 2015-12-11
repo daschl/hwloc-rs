@@ -2,11 +2,24 @@ use libc::{c_int, c_uint, c_ulonglong, c_char};
 use num::{ToPrimitive, FromPrimitive};
 use topology_object::{TopologyObject};
 use bitmap::IntHwlocBitmap;
+use std::cmp::{PartialOrd, Ordering};
 
 pub enum HwlocTopology {}
 
+/// Represents the type of a topology object.
+///
+/// Note that (partial) ordering for object types is implemented as a call
+/// into the `hwloc` library which defines ordering as follows:
+///
+/// - A == B if `ObjectType::A` and `ObjectType::B` are the same.
+/// - A < B if `ObjectType::A` includes objects of type `ObjectType::B`.
+/// - A > B if objects of `ObjectType::A` are included in type `ObjectType::B`.
+///
+/// It can also help to think of it as comparing the relative depths of each type, so
+/// a `ObjectType::System` will be smaller than a `ObjectType::PU` since the system
+/// contains processing units.
 #[repr(u32)]
-#[derive(Debug,PartialEq,Clone)]
+#[derive(Debug,Clone)]
 pub enum ObjectType {
 	/// The whole system that is accessible to hwloc. That may comprise several 
 	/// machines in SSI systems like Kerrighed.
@@ -67,6 +80,29 @@ pub enum ObjectType {
 	OSDevice,
 	/// An internal sentinel value.
 	TypeMax,
+}
+
+impl PartialOrd for ObjectType {
+
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		let compared = unsafe { hwloc_compare_types(self.clone(), other.clone()) };
+		match compared {
+			c if c < 0 => Some(Ordering::Less),
+			c if c == 0 => Some(Ordering::Equal),
+			c if c > 0 => Some(Ordering::Greater),
+			_ => None
+		}
+	}
+
+}
+
+impl PartialEq for ObjectType {
+	fn eq(&self, other: &Self) -> bool {
+		match self.partial_cmp(other) {
+			Some(Ordering::Equal) => true,
+			_ => false
+		}
+	}
 }
 
 #[derive(Debug,PartialEq)]
@@ -188,6 +224,8 @@ extern "C" {
 
 	pub fn hwloc_obj_type_snprintf(into: *mut c_char, size: c_int, object: *const TopologyObject, verbose: bool) -> c_int;
 	pub fn hwloc_obj_attr_snprintf(into: *mut c_char, size: c_int, object: *const TopologyObject, separator: *const c_char, verbose: bool) -> c_int;
+
+	pub fn hwloc_compare_types(type1: ObjectType, type2: ObjectType) -> c_int;
 }
 
 #[cfg(test)]
@@ -199,6 +237,15 @@ mod tests {
 	fn should_convert_flag_to_primitive() {
 		assert_eq!(1, TopologyFlag::WholeSystem as u64);
 		assert_eq!(16, TopologyFlag::WholeIo as u64);
+	}
+
+	#[test]
+	fn should_compare_object_types() {
+		assert!(ObjectType::Machine == ObjectType::Machine);
+		assert!(ObjectType::PU == ObjectType::PU);
+
+		assert!(ObjectType::Machine < ObjectType::PU);
+		assert!(ObjectType::PU > ObjectType::Cache);
 	}
 
 }

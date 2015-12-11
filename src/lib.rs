@@ -168,6 +168,8 @@ impl Topology {
 		}
 	}
 
+	//pub fn depth_or_below_for_type(&self, object_type: ObjectType)
+
 	/// Returns the corresponding `ObjectType` for the given depth.
 	///
 	/// # Examples
@@ -353,13 +355,6 @@ mod tests {
 		assert_eq!(0, root_obj.logical_index());
 		assert!(root_obj.first_child().is_some());
 		assert!(root_obj.last_child().is_some());
-	}
-
-	#[test]
-	fn should_get_cpubind() {
-		let topo = Topology::new();
-
-		//print!("{}", topo.get_cpubind().unwrap());
 	}
 
 }
