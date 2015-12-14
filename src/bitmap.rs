@@ -27,8 +27,8 @@ impl HwlocBitmap {
 		HwlocBitmap { bitmap: bitmap, manage: manage }
 	}
 
-	pub fn to_const(&self) -> *mut IntHwlocBitmap {
-		self.bitmap
+	pub fn to_raw(&self) -> *const IntHwlocBitmap {
+		self.bitmap as *const IntHwlocBitmap
 	}
 
 	/// Add index id in bitmap bitmap.

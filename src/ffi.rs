@@ -202,7 +202,7 @@ extern "C" {
 	pub fn hwloc_get_obj_by_depth(topology: *mut HwlocTopology, depth: c_uint, idx: c_uint) -> *mut TopologyObject;
 
 	// === CPU Binding ===
-	pub fn hwloc_set_cpubind(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
+	pub fn hwloc_set_cpubind(topology: *mut HwlocTopology, set: *const IntHwlocBitmap, flags: c_int) -> c_int;
 	pub fn hwloc_get_cpubind(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 	pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 

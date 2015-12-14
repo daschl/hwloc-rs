@@ -317,9 +317,9 @@ impl Topology {
 	}
 
 	/// Bind current process or thread on cpus given in physical bitmap set.
-	pub fn set_cpubind(&self, set: CpuSet, flags: i32) -> Result<i32, CpuBindingError> {
+	pub fn set_cpubind(&self, set: CpuSet, flags: i32) -> Result<(), CpuBindingError> {
 		let result = unsafe {
-			ffi::hwloc_set_cpubind(self.topo, set.to_const(), flags)
+			ffi::hwloc_set_cpubind(self.topo, set.to_raw(), flags)
 		};
 
 		match result {
@@ -327,7 +327,7 @@ impl Topology {
 				let e = errno();
 				Err(CpuBindingError::Generic(e.0 as i32, format!("{}", e)))
 			},
-			r => Ok(r)
+			_ => Ok(())
 		}
 	}
 
