@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 extern crate libc;
 extern crate num;
+extern crate errno;
 
 mod ffi;
 mod topology_object;
@@ -11,6 +12,7 @@ pub use bitmap::IntHwlocBitmap;
 pub use bitmap::CpuSet;
 
 use num::{ToPrimitive, FromPrimitive};
+use errno::errno;
 
 pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
@@ -141,7 +143,7 @@ impl Topology {
 	///
 	/// let machine_depth = topology.depth_for_type(&ObjectType::Machine).unwrap();
 	/// let pu_depth = topology.depth_for_type(&ObjectType::PU).unwrap();
-	/// assert!(machine_depth < pu_depth); 
+	/// assert!(machine_depth < pu_depth);
 	/// ```
 	///
 	/// # Failures
@@ -168,6 +170,38 @@ impl Topology {
 		}
 	}
 
+	pub fn depth_or_below_for_type(&self, object_type: &ObjectType) -> Result<u32, TypeDepthError> {
+		match self.depth_for_type(object_type) {
+			Ok(d) => Ok(d),
+			Err(TypeDepthError::TypeDepthUnknown) => {
+				let pu_depth = self.depth_for_type(&ObjectType::PU).unwrap();
+				for i in (0..pu_depth).rev() {
+					if self.type_at_depth(i) < *object_type {
+						return Ok(i+1);
+					}
+				}
+				Err(TypeDepthError::TypeDepthUnknown)
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+	pub fn depth_or_above_for_type(&self, object_type: &ObjectType) -> Result<u32, TypeDepthError> {
+		match self.depth_for_type(object_type) {
+			Ok(d) => Ok(d),
+			Err(TypeDepthError::TypeDepthUnknown) => {
+				let pu_depth = self.depth_for_type(&ObjectType::PU).unwrap();
+				for i in 0..pu_depth {
+					if self.type_at_depth(i) > *object_type {
+						return Ok(i-1);
+					}
+				}
+				Err(TypeDepthError::TypeDepthUnknown)
+			},
+			Err(e) => Err(e),
+		}
+	}
+
 	//pub fn depth_or_below_for_type(&self, object_type: ObjectType)
 
 	/// Returns the corresponding `ObjectType` for the given depth.
@@ -187,7 +221,7 @@ impl Topology {
 	///
 	/// # Panics
 	///
-	/// This method will panic if the given depth is larger than the full depth 
+	/// This method will panic if the given depth is larger than the full depth
 	/// minus one. It can't be negative since its an unsigned integer, but be
 	/// careful with the depth provided in general.
 	pub fn type_at_depth(&self, depth: u32) -> ObjectType {
@@ -204,7 +238,7 @@ impl Topology {
 	///
 	/// # Examples
 	///
-	/// ```	
+	/// ```
 	/// use hwloc::Topology;
 	///
 	/// let topology = Topology::new();
@@ -215,7 +249,7 @@ impl Topology {
 	///
 	/// # Panics
 	///
-	/// This method will panic if the given depth is larger than the full depth 
+	/// This method will panic if the given depth is larger than the full depth
 	/// minus one. It can't be negative since its an unsigned integer, but be
 	/// careful with the depth provided in general.
 	pub fn size_at_depth(&self, depth: u32) -> u32 {
@@ -282,25 +316,40 @@ impl Topology {
 		}).collect::<Vec<&TopologyObject>>()
 	}
 
-	pub fn get_cpubind(&self) -> Option<CpuSet> {
-		let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-		let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
-		if res >= 0 {
-			Some(CpuSet::from_raw(raw_set, true))
-		} else {
-			None
+	/// Bind current process or thread on cpus given in physical bitmap set.
+	pub fn set_cpubind(&self, set: CpuSet, flags: i32) -> Result<i32, CpuBindingError> {
+		let result = unsafe {
+			ffi::hwloc_set_cpubind(self.topo, set.to_const(), flags)
+		};
+
+		match result {
+			r if r < 0 => {
+				let e = errno();
+				Err(CpuBindingError::Generic(e.0 as i32, format!("{}", e)))
+			},
+			r => Ok(r)
 		}
 	}
 
-	pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
-		let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-		let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
-		if res >= 0 {
-			Some(CpuSet::from_raw(raw_set, true))
-		} else {
-			None
-		}
-	}
+	//pub fn get_cpubind(&self) -> Option<CpuSet> {
+	//	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+	//	let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
+	//	if res >= 0 {
+	//		Some(CpuSet::from_raw(raw_set, true))
+	//	} else {
+	//		None
+	//	}
+	//}
+
+	//pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
+	//	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+	//	let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
+	//	if res >= 0 {
+	//		Some(CpuSet::from_raw(raw_set, true))
+	//	} else {
+	//		None
+	//	}
+	//}
 
 }
 
@@ -310,6 +359,11 @@ impl Drop for Topology {
 		unsafe { ffi::hwloc_topology_destroy(self.topo) }
 	}
 
+}
+
+#[derive(Debug)]
+pub enum CpuBindingError {
+	Generic(i32, String)
 }
 
 #[cfg(test)]

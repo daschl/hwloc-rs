@@ -21,16 +21,16 @@ pub enum HwlocTopology {}
 #[repr(u32)]
 #[derive(Debug,Clone)]
 pub enum ObjectType {
-	/// The whole system that is accessible to hwloc. That may comprise several 
+	/// The whole system that is accessible to hwloc. That may comprise several
 	/// machines in SSI systems like Kerrighed.
 	System,
-	/// The typical root object type. A set of processors and memory with cache 
+	/// The typical root object type. A set of processors and memory with cache
 	/// coherency.
 	Machine,
-	/// A set of processors around memory which the processors can directly 
+	/// A set of processors around memory which the processors can directly
 	/// access.
 	NUMANode,
-	/// Physical package, what goes into a socket. In the physical meaning, 
+	/// Physical package, what goes into a socket. In the physical meaning,
 	/// i.e. that you can add or remove physically.
 	Package,
 	/// The Cache. Can be L1i, L1d, L2, L3,...
@@ -39,9 +39,9 @@ pub enum ObjectType {
 	Core,
 	/// Processing Unit, or (Logical) Processor.
 	///
-	/// An execution unit (may share a core with some other logical 
-	/// processors, e.g. in the case of an SMT core). Objects of this kind 
-	/// are always reported and can thus be used as fallback when others are 
+	/// An execution unit (may share a core with some other logical
+	/// processors, e.g. in the case of an SMT core). Objects of this kind
+	/// are always reported and can thus be used as fallback when others are
 	/// not.
 	PU,
 	/// Group objects.
@@ -73,9 +73,9 @@ pub enum ObjectType {
 	/// is enabled through the custom flags.
 	PCIDevice,
 	/// Operating system device.
-	///	
-	/// These objects have neither CPU sets nor node sets. They are not 
-	/// added to the topology unless I/O discovery is enabled 
+	///
+	/// These objects have neither CPU sets nor node sets. They are not
+	/// added to the topology unless I/O discovery is enabled
 	/// through the custom flags.
 	OSDevice,
 	/// An internal sentinel value.
@@ -139,7 +139,7 @@ pub enum TopologyFlag {
 }
 
 impl ToPrimitive for TopologyFlag {
-	
+
 	fn to_i64(&self) -> Option<i64> {
 		match *self {
 			TopologyFlag::WholeSystem => Some(TopologyFlag::WholeSystem as i64),
@@ -202,6 +202,7 @@ extern "C" {
 	pub fn hwloc_get_obj_by_depth(topology: *mut HwlocTopology, depth: c_uint, idx: c_uint) -> *mut TopologyObject;
 
 	// === CPU Binding ===
+	pub fn hwloc_set_cpubind(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 	pub fn hwloc_get_cpubind(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 	pub fn hwloc_get_last_cpu_location(topology: *mut HwlocTopology, set: *mut IntHwlocBitmap, flags: c_int) -> c_int;
 

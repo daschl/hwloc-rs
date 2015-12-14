@@ -13,6 +13,7 @@ readme = "README.md"
 
 [dependencies]
 libc = "0.2.2"
+errno = "0.1.5"
 num = "0.1.28"
 
 [build-dependencies]

@@ -27,6 +27,10 @@ impl HwlocBitmap {
 		HwlocBitmap { bitmap: bitmap, manage: manage }
 	}
 
+	pub fn to_const(&self) -> *mut IntHwlocBitmap {
+		self.bitmap
+	}
+
 	/// Add index id in bitmap bitmap.
 	pub fn set(&mut self, id: u32) {
 		unsafe { ffi::hwloc_bitmap_set(self.bitmap, id) }
@@ -75,7 +79,7 @@ impl HwlocBitmap {
 
 	/// Keep a single index among those set in the bitmap.
 	///
-	/// May be useful before binding so that the process does not have a 
+	/// May be useful before binding so that the process does not have a
 	/// chance of migrating between multiple logical CPUs in the original mask.
 	pub fn singlify(&mut self) {
 		unsafe { ffi::hwloc_bitmap_singlify(self.bitmap) }
@@ -105,7 +109,7 @@ impl HwlocBitmap {
 impl Not for HwlocBitmap {
 	type Output = HwlocBitmap;
 
-	/// Returns a new bitmap which contains the negated values of the current 
+	/// Returns a new bitmap which contains the negated values of the current
 	/// one.
 	fn not(self) -> HwlocBitmap {
 		unsafe {
