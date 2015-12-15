@@ -2,7 +2,7 @@ use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_ucha
 use std::ffi::CString;
 use std::fmt;
 
-use ffi::{ObjectType};
+use ffi::ObjectType;
 use ffi;
 
 use bitmap::{IntHwlocBitmap, CpuSet, NodeSet};
@@ -27,7 +27,7 @@ pub struct TopologyObject {
     children: *mut *mut TopologyObject,
     first_child: *mut TopologyObject,
     last_child: *mut TopologyObject,
-    userdata: *mut c_void, 
+    userdata: *mut c_void,
     cpuset: *mut IntHwlocBitmap,
     complete_cpuset: *mut IntHwlocBitmap,
     online_cpuset: *mut IntHwlocBitmap,
@@ -43,7 +43,6 @@ pub struct TopologyObject {
 }
 
 impl TopologyObject {
-
     /// The type of the object.
     pub fn object_type(&self) -> ObjectType {
         self.object_type.clone()
@@ -130,7 +129,7 @@ impl TopologyObject {
 
     /// Last child of the next depth.
     pub fn parent(&self) -> Option<&TopologyObject> {
-       self.deref_topology(&self.parent)
+        self.deref_topology(&self.parent)
     }
 
     /// Previous object below the same parent.
@@ -188,7 +187,7 @@ impl TopologyObject {
     /// NUMA nodes covered by this object or containing this object.
     ///
     /// This is the set of NUMA nodes for which there are NODE objects in the topology under or 
-    // above this object, i.e. which are known to be physically contained in this object or containing 
+    // above this object, i.e. which are known to be physically contained in this object or containing
     /// it and known how (the children path between this object and the NODE objects).
     ///
     /// In the end, these nodes are those that are close to the current object.
@@ -228,15 +227,29 @@ impl TopologyObject {
     }
 
     fn deref_topology(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
-        unsafe { if p.is_null() { None } else { Some(&**p) } }
+        unsafe {
+            if p.is_null() {
+                None
+            } else {
+                Some(&**p)
+            }
+        }
     }
 
     fn deref_cpuset(&self, p: *mut IntHwlocBitmap) -> Option<CpuSet> {
-        if p.is_null() { None } else { Some(CpuSet::from_raw(p, false)) }
+        if p.is_null() {
+            None
+        } else {
+            Some(CpuSet::from_raw(p, false))
+        }
     }
 
     fn deref_nodeset(&self, p: *mut IntHwlocBitmap) -> Option<NodeSet> {
-        if p.is_null() { None } else { Some(NodeSet::from_raw(p, false)) }
+        if p.is_null() {
+            None
+        } else {
+            Some(NodeSet::from_raw(p, false))
+        }
     }
 
     pub fn cache_attributes(&self) -> Option<&TopologyObjectCacheAttributes> {
@@ -247,7 +260,6 @@ impl TopologyObject {
             unsafe { Some(&*cache_ptr) }
         }
     }
-
 }
 
 impl fmt::Display for TopologyObject {
@@ -262,17 +274,19 @@ impl fmt::Display for TopologyObject {
         let separator_ptr = separator.into_raw();
 
         unsafe {
-            ffi::hwloc_obj_type_snprintf(type_str_ptr, 64, & *self as *const TopologyObject, false);
-            ffi::hwloc_obj_attr_snprintf(attr_str_ptr, 2048, & *self as *const TopologyObject, separator_ptr, false);
-            
+            ffi::hwloc_obj_type_snprintf(type_str_ptr, 64, &*self as *const TopologyObject, false);
+            ffi::hwloc_obj_attr_snprintf(attr_str_ptr,
+                                         2048,
+                                         &*self as *const TopologyObject,
+                                         separator_ptr,
+                                         false);
+
             CString::from_raw(separator_ptr);
 
-            write!(
-                f, 
-                "{} ({})",
-                CString::from_raw(type_str_ptr).to_str().unwrap(), 
-                CString::from_raw(attr_str_ptr).to_str().unwrap()
-            )
+            write!(f,
+                   "{} ({})",
+                   CString::from_raw(type_str_ptr).to_str().unwrap(),
+                   CString::from_raw(attr_str_ptr).to_str().unwrap())
         }
     }
 }
@@ -319,7 +333,6 @@ pub struct TopologyObjectDistances {
 }
 
 impl TopologyObjectDistances {
-
     /// Relative depth of the considered objects below the 
     /// object containing this distance information.
     pub fn relative_depth(&self) -> u32 {
@@ -346,7 +359,6 @@ impl TopologyObjectDistances {
     pub fn base_latency(&self) -> f32 {
         self.latency_base
     }
-
 }
 
 #[repr(C)]
@@ -425,9 +437,9 @@ pub struct TopologyObjectPCIDevAttributes {
 
 #[repr(C)]
 pub struct TopologyObjectBridgeAttributes {
-    //pub upstream: Union_Unnamed4,
+    // pub upstream: Union_Unnamed4,
     upstream_type: TopologyObjectBridgeType,
-    //pub downstream: Union_Unnamed5,
+    // pub downstream: Union_Unnamed5,
     downstream_type: TopologyObjectBridgeType,
     depth: c_uint,
 }
