@@ -35,10 +35,10 @@ pub struct TopologyObject {
     nodeset: *mut IntHwlocBitmap,
     complete_nodeset: *mut IntHwlocBitmap,
     allowed_nodeset: *mut IntHwlocBitmap,
-    distances: *mut *mut TopologyObjectDistances, // todo: getter
-    distances_count: c_uint, // todo: getter
-    infos: *mut TopologyObjectInfo, // todo: getter
-    infos_count: c_uint, // todo: getter
+    distances: *mut *mut TopologyObjectDistances, // TODO: getter
+    distances_count: c_uint, // TODO: getter
+    infos: *mut TopologyObjectInfo, // TODO: getter
+    infos_count: c_uint, // TODO: getter
     symmetric_subtree: c_int,
 }
 
@@ -55,7 +55,7 @@ impl TopologyObject {
 
     /// The OS-provided physical index number.
     ///
-    /// It is not guaranteed unique across the entire machine, 
+    /// It is not guaranteed unique across the entire machine,
     /// except for PUs and NUMA nodes.
     pub fn os_index(&self) -> u32 {
         self.os_index
@@ -69,14 +69,14 @@ impl TopologyObject {
 
     /// Vertical index in the hierarchy.
     ///
-    /// If the topology is symmetric, this is equal to the parent 
-    /// depth plus one, and also equal to the number of parent/child 
+    /// If the topology is symmetric, this is equal to the parent
+    /// depth plus one, and also equal to the number of parent/child
     /// links from the root object to here.
     pub fn depth(&self) -> u32 {
         self.depth
     }
 
-    /// Horizontal index in the whole list of similar objects, hence guaranteed 
+    /// Horizontal index in the whole list of similar objects, hence guaranteed
     /// unique across the entire machine.
     ///
     /// Could be a "cousin_rank" since it's the rank within the "cousin" list below.
@@ -94,7 +94,7 @@ impl TopologyObject {
         self.arity
     }
 
-    /// Set if the subtree of objects below this object is symmetric, which means all 
+    /// Set if the subtree of objects below this object is symmetric, which means all
     /// children and their children have identical subtrees.
     pub fn symmetric_subtree(&self) -> bool {
         self.symmetric_subtree == 1
@@ -144,9 +144,9 @@ impl TopologyObject {
 
     /// CPUs covered by this object.
     ///
-    /// This is the set of CPUs for which there are PU objects in the 
-    /// topology under this object, i.e. which are known to be physically 
-    /// contained in this object and known how (the children path between this 
+    /// This is the set of CPUs for which there are PU objects in the
+    /// topology under this object, i.e. which are known to be physically
+    /// contained in this object and known how (the children path between this
     /// object and the PU objects).
     pub fn cpuset(&self) -> Option<CpuSet> {
         self.deref_cpuset(self.cpuset)
@@ -154,11 +154,11 @@ impl TopologyObject {
 
     /// The complete CPU set of logical processors of this object.
     ///
-    /// This includes not only the same as the cpuset field, but also the 
-    /// CPUs for which topology information is unknown or incomplete, and the 
-    /// CPUs that are ignored when the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is 
-    /// not set. Thus no corresponding PU object may be found in the topology, 
-    /// because the precise position is undefined. It is however known that it 
+    /// This includes not only the same as the cpuset field, but also the
+    /// CPUs for which topology information is unknown or incomplete, and the
+    /// CPUs that are ignored when the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is
+    /// not set. Thus no corresponding PU object may be found in the topology,
+    /// because the precise position is undefined. It is however known that it
     /// would be somewhere under this object.
     pub fn complete_cpuset(&self) -> Option<CpuSet> {
         self.deref_cpuset(self.complete_cpuset)
@@ -166,8 +166,8 @@ impl TopologyObject {
 
     /// The CPU set of online logical processors.
     ///
-    /// This includes the CPUs contained in this object that are online, 
-    /// i.e. draw power and can execute threads. It may however not be allowed 
+    /// This includes the CPUs contained in this object that are online,
+    /// i.e. draw power and can execute threads. It may however not be allowed
     /// to bind to them due to administration rules, see allowed_cpuset.
     pub fn online_cpuset(&self) -> Option<CpuSet> {
         self.deref_cpuset(self.online_cpuset)
@@ -175,10 +175,10 @@ impl TopologyObject {
 
     /// The CPU set of allowed logical processors.
     ///
-    /// This includes the CPUs contained in this object which are allowed for 
-    /// binding, i.e. passing them to the hwloc binding functions should not 
-    /// return permission errors. This is usually restricted by administration 
-    /// rules. Some of them may however be offline so binding to them may still 
+    /// This includes the CPUs contained in this object which are allowed for
+    /// binding, i.e. passing them to the hwloc binding functions should not
+    /// return permission errors. This is usually restricted by administration
+    /// rules. Some of them may however be offline so binding to them may still
     /// not be possible, see online_cpuset.
     pub fn allowed_cpuset(&self) -> Option<CpuSet> {
         self.deref_cpuset(self.allowed_cpuset)
@@ -186,29 +186,29 @@ impl TopologyObject {
 
     /// NUMA nodes covered by this object or containing this object.
     ///
-    /// This is the set of NUMA nodes for which there are NODE objects in the topology under or 
-    // above this object, i.e. which are known to be physically contained in this object or containing
-    /// it and known how (the children path between this object and the NODE objects).
+    /// This is the set of NUMA nodes for which there are NODE objects in the topology under or
+    // above this object, i.e. which are known to be physically contained in this object or
+    /// containing it and known how (the children path between this object and the NODE objects).
     ///
     /// In the end, these nodes are those that are close to the current object.
-    /// If the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM configuration flag is set, some of these nodes may not 
-    /// be allowed for allocation, see allowed_nodeset.
+    /// If the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM configuration flag is set, some of these nodes may
+    /// not be allowed for allocation, see allowed_nodeset.
     ///
-    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so the nodeset 
-    /// is full.
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so the
+    /// nodeset is full.
     pub fn nodeset(&self) -> Option<NodeSet> {
         self.deref_nodeset(self.nodeset)
     }
 
     /// The complete NUMA node set of this object,.
     ///
-    /// This includes not only the same as the nodeset field, but also the NUMA nodes for which topology 
-    /// information is unknown or incomplete, and the nodes that are ignored when the 
-    /// HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is not set. Thus no corresponding NODE object may be found 
-    /// in the topology, because the precise position is undefined. It is however known that it would be 
-    /// somewhere under this object.
+    /// This includes not only the same as the nodeset field, but also the NUMA nodes for which
+    /// topology information is unknown or incomplete, and the nodes that are ignored when the
+    /// HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is not set. Thus no corresponding NODE object may
+    /// be found in the topology, because the precise position is undefined. It is however known
+    /// that it would be somewhere under this object.
     ///
-    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so 
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so
     /// complete_nodeset is full.
     pub fn complete_nodeset(&self) -> Option<NodeSet> {
         self.deref_nodeset(self.complete_nodeset)
@@ -216,12 +216,12 @@ impl TopologyObject {
 
     /// The set of allowed NUMA memory nodes.
     ///
-    /// This includes the NUMA memory nodes contained in this object which are allowed for memory allocation, 
-    /// i.e. passing them to NUMA node-directed memory allocation should not return permission errors. This is 
-    /// usually restricted by administration rules.
+    /// This includes the NUMA memory nodes contained in this object which are allowed for memory
+    /// allocation, i.e. passing them to NUMA node-directed memory allocation should not return
+    /// permission errors. This is usually restricted by administration rules.
     ///
-    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so allowed_nodeset 
-    /// is full.
+    /// If there are no NUMA nodes in the machine, all the memory is close to this object, so
+    /// allowed_nodeset is full.
     pub fn allowed_nodeset(&self) -> Option<NodeSet> {
         self.deref_nodeset(self.allowed_nodeset)
     }
@@ -333,7 +333,7 @@ pub struct TopologyObjectDistances {
 }
 
 impl TopologyObjectDistances {
-    /// Relative depth of the considered objects below the 
+    /// Relative depth of the considered objects below the
     /// object containing this distance information.
     pub fn relative_depth(&self) -> u32 {
         self.relative_depth
@@ -352,7 +352,7 @@ impl TopologyObjectDistances {
         self.latency_max
     }
 
-    /// The multiplier that should be applied to latency matrix to 
+    /// The multiplier that should be applied to latency matrix to
     /// retrieve the original OS-provided latencies.
     ///
     /// Usually 10 on Linux since ACPI SLIT uses 10 for local latency.
