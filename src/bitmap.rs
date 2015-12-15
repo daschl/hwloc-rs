@@ -23,11 +23,13 @@ impl HwlocBitmap {
 		HwlocBitmap { bitmap: int_bitmap, manage: true }
 	}
 
+	/// Wraps the given bitmap pointer into its rust bitmap representation.
 	pub fn from_raw(bitmap: *mut IntHwlocBitmap, manage: bool) -> HwlocBitmap {
 		HwlocBitmap { bitmap: bitmap, manage: manage }
 	}
 
-	pub fn to_raw(&self) -> *const IntHwlocBitmap {
+	/// Returns the containted rae bitmap pointer for interaction with hwloc.
+	pub fn as_ptr(&self) -> *const IntHwlocBitmap {
 		self.bitmap as *const IntHwlocBitmap
 	}
 

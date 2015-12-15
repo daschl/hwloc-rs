@@ -6,10 +6,12 @@ extern crate errno;
 mod ffi;
 mod topology_object;
 mod bitmap;
+mod support;
 
 pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
-pub use bitmap::IntHwlocBitmap;
+
 pub use bitmap::CpuSet;
+pub use support::{TopologySupport, TopologyDiscoverySupport, TopologyCpuBindSupport, TopologyMemBindSupport};
 
 use num::{ToPrimitive, FromPrimitive};
 use errno::errno;
@@ -17,7 +19,8 @@ use errno::errno;
 pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
 pub struct Topology {
-	topo: *mut ffi::HwlocTopology
+	topo: *mut ffi::HwlocTopology,
+	support: *const TopologySupport,
 }
 
 impl Topology {
@@ -47,7 +50,9 @@ impl Topology {
 			ffi::hwloc_topology_load(topo);
 		}
 
-		Topology { topo: topo }
+		let support = unsafe { ffi::hwloc_topology_get_support(topo) };
+
+		Topology { topo: topo, support: support }
 	}
 
 	/// Creates a new Topology with custom flags.
@@ -79,7 +84,9 @@ impl Topology {
 			ffi::hwloc_topology_load(topo);
 		}
 
-		Topology { topo: topo }
+		let support = unsafe { ffi::hwloc_topology_get_support(topo) };
+
+		Topology { topo: topo, support: support }
 	}
 
 	/// Returns the flags currently set for this topology.
@@ -319,7 +326,7 @@ impl Topology {
 	/// Bind current process or thread on cpus given in physical bitmap set.
 	pub fn set_cpubind(&self, set: CpuSet, flags: i32) -> Result<(), CpuBindingError> {
 		let result = unsafe {
-			ffi::hwloc_set_cpubind(self.topo, set.to_raw(), flags)
+			ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags)
 		};
 
 		match result {

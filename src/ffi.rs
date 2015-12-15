@@ -3,6 +3,7 @@ use num::{ToPrimitive, FromPrimitive};
 use topology_object::{TopologyObject};
 use bitmap::IntHwlocBitmap;
 use std::cmp::{PartialOrd, Ordering};
+use support::TopologySupport;
 
 pub enum HwlocTopology {}
 
@@ -190,6 +191,7 @@ extern "C" {
 
 	pub fn hwloc_topology_set_flags(topology: *mut HwlocTopology, flags: c_ulonglong) -> c_int;
 	pub fn hwloc_topology_get_flags(topology: *mut HwlocTopology) -> c_ulonglong;
+	pub fn hwloc_topology_get_support(topology: *mut HwlocTopology) -> *const TopologySupport;
 
 	// === Object levels, depths and types ===
 
