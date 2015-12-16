@@ -94,6 +94,10 @@ impl Topology {
         }
     }
 
+    pub fn support(&self) -> &TopologySupport {
+        unsafe { &*self.support }
+    }
+
     /// Returns the flags currently set for this topology.
     ///
     /// Note that the flags are only used during initialization, so this
