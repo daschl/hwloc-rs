@@ -343,15 +343,16 @@ impl Topology {
         }
     }
 
-    // pub fn get_cpubind(&self) -> Option<CpuSet> {
-    // 	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-    // 	let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
-    // 	if res >= 0 {
-    // 		Some(CpuSet::from_raw(raw_set, true))
-    // 	} else {
-    // 		None
-    // 	}
-    // }
+    /// Get current process or thread binding.
+    pub fn get_cpubinding(&self) -> Option<CpuSet> {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
+        if res >= 0 {
+        	Some(CpuSet::from_raw(raw_set, true))
+        } else {
+        	None
+        }
+    }
 
     pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
     	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };

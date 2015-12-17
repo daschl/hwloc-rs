@@ -20,9 +20,15 @@ fn main() {
     //  Get only one logical processor (in case the core is SMT/hyper-threaded).
     cpuset.singlify();
 
+    // Print the current cpu binding before explicit setting
+    println!("Cpu Binding before explicit bind: {:?}", topo.get_cpubinding());
+
     // Try to bind all threads of the current (possibly multithreaded) process.
     match topo.set_cpubinding(cpuset, CPUBIND_PROCESS) {
         Ok(_) => println!("Correctly bound to last core"),
         Err(e) => println!("Failed to bind: {:?}", e)
     }
+
+    // Print the current cpu binding after explicit setting
+    println!("Cpu Binding after explicit bind: {:?}", topo.get_cpubinding());
 }

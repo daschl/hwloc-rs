@@ -2,7 +2,7 @@ extern crate hwloc;
 
 use hwloc::{Topology, ObjectType};
 
-/// Compute the amount of cache that the first logical processor 
+/// Compute the amount of cache that the first logical processor
 /// has above it.
 fn main() {
 	let topo = Topology::new();

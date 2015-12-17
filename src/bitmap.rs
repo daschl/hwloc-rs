@@ -152,6 +152,16 @@ impl fmt::Display for HwlocBitmap {
     }
 }
 
+impl fmt::Debug for HwlocBitmap {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut result: *mut c_char = ptr::null_mut();
+        unsafe {
+            ffi::hwloc_bitmap_list_asprintf(&mut result, self.bitmap);
+            write!(f, "{}", CStr::from_ptr(result).to_str().unwrap())
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
