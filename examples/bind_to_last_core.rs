@@ -1,6 +1,6 @@
 extern crate hwloc;
 
-use hwloc::{Topology, ObjectType};
+use hwloc::{Topology, ObjectType, CPUBIND_PROCESS};
 
 /// Bind to only one thread of the last core of the machine.
 ///
@@ -20,8 +20,8 @@ fn main() {
     //  Get only one logical processor (in case the core is SMT/hyper-threaded).
     cpuset.singlify();
 
-    // Try to Bind!
-    match topo.set_cpubind(cpuset, 0) {
+    // Try to bind all threads of the current (possibly multithreaded) process.
+    match topo.set_cpubinding(cpuset, CPUBIND_PROCESS) {
         Ok(_) => println!("Correctly bound to last core"),
         Err(e) => println!("Failed to bind: {:?}", e)
     }

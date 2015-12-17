@@ -1,7 +1,9 @@
 #![allow(dead_code)]
+#[macro_use]
+extern crate bitflags;
+extern crate errno;
 extern crate libc;
 extern crate num;
-extern crate errno;
 
 mod ffi;
 mod topology_object;
@@ -329,13 +331,13 @@ impl Topology {
     }
 
     /// Bind current process or thread on cpus given in physical bitmap set.
-    pub fn set_cpubind(&self, set: CpuSet, flags: i32) -> Result<(), CpuBindingError> {
-        let result = unsafe { ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags) };
+    pub fn set_cpubinding(&self, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+        let result = unsafe { ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits() as i32) };
 
         match result {
             r if r < 0 => {
                 let e = errno();
-                Err(CpuBindingError::Generic(e.0 as i32, format!("{}", e)))
+                Err(CpuBindError::Generic(e.0 as i32, format!("{}", e)))
             }
             _ => Ok(()),
         }
@@ -351,15 +353,15 @@ impl Topology {
     // 	}
     // }
 
-    // pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
-    // 	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-    // 	let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
-    // 	if res >= 0 {
-    // 		Some(CpuSet::from_raw(raw_set, true))
-    // 	} else {
-    // 		None
-    // 	}
-    // }
+    pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
+    	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+    	let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
+    	if res >= 0 {
+            Some(CpuSet::from_raw(raw_set, true))
+    	} else {
+    		None
+    	}
+    }
 }
 
 impl Drop for Topology {
@@ -369,8 +371,33 @@ impl Drop for Topology {
 }
 
 #[derive(Debug)]
-pub enum CpuBindingError {
+pub enum CpuBindError {
     Generic(i32, String),
+}
+
+bitflags! {
+    /// Process/Thread binding flags.
+    ///
+    /// These bit flags can be used to refine the binding policy.
+    ///
+    /// The default (Process) is to bind the current process, assumed to be
+    /// single-threaded, in a non-strict way.  This is the most portable
+    /// way to bind as all operating systems usually provide it.
+    ///
+    /// **Note:** Not all systems support all kinds of binding.
+    ///
+    /// The following flags are available:
+    ///
+    /// - **CPUBIND_PROCESS:** Bind all threads of the current (possibly) multithreaded process.
+    /// - **CPUBIND_THREAD:** Bind current thread of current process.
+    /// - **CPUBIND_STRICT:** Request for strict binding from the OS.
+    /// - **CPUBIND_NO_MEMBIND:** Avoid any effect on memory binding.
+    flags CpuBindFlags: u32 {
+        const CPUBIND_PROCESS = (1<<0),
+        const CPUBIND_THREAD  = (1<<1),
+        const CPUBIND_STRICT = (1<<2),
+        const CPUBIND_NO_MEMBIND = (1<<3),
+    }
 }
 
 #[cfg(test)]
@@ -417,6 +444,32 @@ mod tests {
         assert_eq!(0, root_obj.logical_index());
         assert!(root_obj.first_child().is_some());
         assert!(root_obj.last_child().is_some());
+    }
+
+    #[test]
+    #[cfg(target_os="linux")]
+    fn should_support_cpu_binding_on_linux() {
+        let topo = Topology::new();
+
+        assert!(topo.support().cpu().set_current_process());
+        assert!(topo.support().cpu().set_current_thread());
+    }
+
+    #[test]
+    #[cfg(target_os="macos")]
+    fn should_not_support_cpu_binding_on_macos() {
+        let topo = Topology::new();
+
+        assert_eq!(false, topo.support().cpu().set_current_process());
+        assert_eq!(false, topo.support().cpu().set_current_thread());
+    }
+
+    #[test]
+    fn should_produce_cpubind_bitflags() {
+        assert_eq!("1", format!("{:b}", CPUBIND_PROCESS.bits()));
+        assert_eq!("10", format!("{:b}", CPUBIND_THREAD.bits()));
+        assert_eq!("100", format!("{:b}", CPUBIND_STRICT.bits()));
+        assert_eq!("101", format!("{:b}", (CPUBIND_STRICT | CPUBIND_PROCESS).bits()));
     }
 
 }
