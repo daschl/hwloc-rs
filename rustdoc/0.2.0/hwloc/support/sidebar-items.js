@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TopologyCpuBindSupport","Flags describing actual PU binding support for this topology."],["TopologyDiscoverySupport",""],["TopologyMemBindSupport","Flags describing actual memory binding support for this topology."],["TopologySupport",""]]});

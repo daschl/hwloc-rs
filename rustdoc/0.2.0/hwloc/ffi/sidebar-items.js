@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ObjectType","Represents the type of a topology object."],["TopologyFlag",""],["TypeDepthError",""]]});
