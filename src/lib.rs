@@ -336,7 +336,7 @@ impl Topology {
     }
 
     /// Bind current process or thread on cpus given in physical bitmap set.
-    pub fn set_cpubinding(&self, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding(&mut self, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits())
         };
@@ -350,7 +350,7 @@ impl Topology {
         }
     }
 
-    pub fn set_cpubinding_for_pid(&self, pid: i32, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding_for_pid(&mut self, pid: i32, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits())
         };
@@ -364,7 +364,7 @@ impl Topology {
         }
     }
 
-    pub fn set_cpubinding_for_thread(&self, tid: pthread_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding_for_thread(&mut self, tid: pthread_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_thread_cpubind(self.topo, tid, set.as_ptr(), flags.bits())
         };
