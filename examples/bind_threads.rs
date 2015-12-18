@@ -58,6 +58,6 @@ fn main() {
 
 /// Helper method to get the thread id through libc, with current rust stable (1.5.0) its not
 /// possible otherwise I think.
-fn get_thread_id() -> u64 {
+fn get_thread_id() -> libc::pthread_t {
     unsafe { libc::pthread_self() }
 }
