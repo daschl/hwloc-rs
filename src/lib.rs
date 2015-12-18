@@ -18,6 +18,7 @@ pub use support::{TopologySupport, TopologyDiscoverySupport, TopologyCpuBindSupp
 
 use num::{ToPrimitive, FromPrimitive};
 use errno::errno;
+use libc::pthread_t;
 
 pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
@@ -25,6 +26,9 @@ pub struct Topology {
     topo: *mut ffi::HwlocTopology,
     support: *const TopologySupport,
 }
+
+unsafe impl Send for Topology {}
+unsafe impl Sync for Topology {}
 
 impl Topology {
     /// Creates a new Topology.
@@ -323,6 +327,7 @@ impl Topology {
         }
     }
 
+    /// Returns all `TopologyObject`s at the given depth.
     pub fn objects_at_depth(&self, depth: u32) -> Vec<&TopologyObject> {
         let size = self.size_at_depth(depth);
         (0..size)
@@ -332,7 +337,9 @@ impl Topology {
 
     /// Bind current process or thread on cpus given in physical bitmap set.
     pub fn set_cpubinding(&self, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
-        let result = unsafe { ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits() as i32) };
+        let result = unsafe {
+            ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits())
+        };
 
         match result {
             r if r < 0 => {
@@ -343,10 +350,37 @@ impl Topology {
         }
     }
 
-    /// Get current process or thread binding.
-    pub fn get_cpubinding(&self) -> Option<CpuSet> {
+    pub fn set_cpubinding_for_pid(&self, pid: i32, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+        let result = unsafe {
+            ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits())
+        };
+
+        match result {
+            r if r < 0 => {
+                let e = errno();
+                Err(CpuBindError::Generic(e.0 as i32, format!("{}", e)))
+            }
+            _ => Ok(()),
+        }
+    }
+
+    pub fn set_cpubinding_for_thread(&self, tid: pthread_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+        let result = unsafe {
+            ffi::hwloc_set_thread_cpubind(self.topo, tid, set.as_ptr(), flags.bits())
+        };
+
+        match result {
+            r if r < 0 => {
+                let e = errno();
+                Err(CpuBindError::Generic(e.0 as i32, format!("{}", e)))
+            }
+            _ => Ok(()),
+        }
+    }
+
+    pub fn get_cpubinding_for_thread(&self, tid: pthread_t, flags: CpuBindFlags) -> Option<CpuSet> {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-        let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, 0) };
+        let res = unsafe { ffi::hwloc_get_thread_cpubind(self.topo, tid, raw_set, flags.bits()) };
         if res >= 0 {
         	Some(CpuSet::from_raw(raw_set, true))
         } else {
@@ -354,9 +388,44 @@ impl Topology {
         }
     }
 
-    pub fn get_last_cpu_location(&self) -> Option<CpuSet> {
+    pub fn get_cpubinding_for_pid(&self, pid: i32, flags: CpuBindFlags) -> Option<CpuSet> {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe { ffi::hwloc_get_proc_cpubind(self.topo, pid, raw_set, flags.bits()) };
+        if res >= 0 {
+        	Some(CpuSet::from_raw(raw_set, true))
+        } else {
+        	None
+        }
+    }
+
+    /// Get current process or thread binding.
+    pub fn get_cpubinding(&self, flags: CpuBindFlags) -> Option<CpuSet> {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, flags.bits()) };
+        if res >= 0 {
+        	Some(CpuSet::from_raw(raw_set, true))
+        } else {
+        	None
+        }
+    }
+
+    /// Get the last physical CPU where the current process or thread ran.
+    ///
+    /// The operating system may move some tasks from one processor
+    /// to another at any time according to their binding,
+    /// so this function may return something that is already
+    /// outdated.
+    ///
+    /// Flags can include either `CPUBIND_PROCESS` or `CPUBIND_THREAD` to
+    /// specify whether the query should be for the whole process (union of all CPUs
+    /// on which all threads are running), or only the current thread. If the
+    /// process is single-threaded, flags can be set to zero to let hwloc use
+    /// whichever method is available on the underlying OS.
+    pub fn get_last_cpu_location(&self, flags: CpuBindFlags) -> Option<CpuSet> {
     	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-    	let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, 0) };
+    	let res = unsafe {
+            ffi::hwloc_get_last_cpu_location(self.topo, raw_set, flags.bits())
+        };
     	if res >= 0 {
             Some(CpuSet::from_raw(raw_set, true))
     	} else {
@@ -393,11 +462,23 @@ bitflags! {
     /// - **CPUBIND_THREAD:** Bind current thread of current process.
     /// - **CPUBIND_STRICT:** Request for strict binding from the OS.
     /// - **CPUBIND_NO_MEMBIND:** Avoid any effect on memory binding.
-    flags CpuBindFlags: u32 {
+    flags CpuBindFlags: i32 {
         const CPUBIND_PROCESS = (1<<0),
         const CPUBIND_THREAD  = (1<<1),
         const CPUBIND_STRICT = (1<<2),
         const CPUBIND_NO_MEMBIND = (1<<3),
+    }
+}
+
+bitflags! {
+    flags MemBindPolicy: i32 {
+        const MEMBIND_DEFAULT = 0,
+        const MEMBIND_FIRSTTOUCH = 1,
+        const MEMBIND_BIND = 2,
+        const MEMBIND_INTERLEAVE = 3,
+        const MEMBIND_REPLICATE = 4,
+        const MEMBIND_NEXTTOUCH = 5,
+        const MEMBIND_MIXED = -1,
     }
 }
 

@@ -1,4 +1,4 @@
-use libc::{c_int, c_uint, c_ulonglong, c_char};
+use libc::{c_int, c_uint, c_ulonglong, c_char, pid_t, pthread_t};
 use num::{ToPrimitive, FromPrimitive};
 use topology_object::TopologyObject;
 use bitmap::IntHwlocBitmap;
@@ -214,6 +214,27 @@ extern "C" {
                                        set: *mut IntHwlocBitmap,
                                        flags: c_int)
                                        -> c_int;
+    pub fn hwloc_set_proc_cpubind(topology: *mut HwlocTopology,
+                                  pid: pid_t,
+                                  set: *const IntHwlocBitmap,
+                                  flags: c_int)
+                                  -> c_int;
+    pub fn hwloc_get_proc_cpubind(topology: *mut HwlocTopology,
+                                  pid: pid_t,
+                                  set: *const IntHwlocBitmap,
+                                  flags: c_int)
+                                  -> c_int;
+    pub fn hwloc_set_thread_cpubind(topology: *mut HwlocTopology,
+                                thread: pthread_t,
+                                set: *const IntHwlocBitmap,
+                                flags: c_int)
+                                -> c_int;
+    pub fn hwloc_get_thread_cpubind(topology: *mut HwlocTopology,
+                                  pid: pthread_t,
+                                  set: *const IntHwlocBitmap,
+                                  flags: c_int)
+                                  -> c_int;
+      //int hwloc_get_proc_last_cpu_location(hwloc_topology_t topology, hwloc_pid_t pid, hwloc_cpuset_t set, int flags);
 
     // === Bitmap Methods ===
     pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;

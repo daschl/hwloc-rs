@@ -6,6 +6,16 @@ use hwloc::{Topology, ObjectType, CPUBIND_PROCESS};
 ///
 /// First find out where cores are, or else smaller sets of CPUs if
 /// the OS doesn't have the notion of a "core".
+///
+/// Example Output with 2 cores (no HT) on linux:
+///
+/// ```
+/// Cpu Binding before explicit bind: Some(0-1)
+/// Cpu Location before explicit bind: Some(0)
+/// Correctly bound to last core
+/// Cpu Binding after explicit bind: Some(1)
+/// Cpu Location after explicit bind: Some(1)
+/// ```
 fn main() {
     let topo = Topology::new();
 
@@ -21,7 +31,8 @@ fn main() {
     cpuset.singlify();
 
     // Print the current cpu binding before explicit setting
-    println!("Cpu Binding before explicit bind: {:?}", topo.get_cpubinding());
+    println!("Cpu Binding before explicit bind: {:?}", topo.get_cpubinding(CPUBIND_PROCESS));
+    println!("Cpu Location before explicit bind: {:?}", topo.get_last_cpu_location(CPUBIND_PROCESS));
 
     // Try to bind all threads of the current (possibly multithreaded) process.
     match topo.set_cpubinding(cpuset, CPUBIND_PROCESS) {
@@ -30,5 +41,6 @@ fn main() {
     }
 
     // Print the current cpu binding after explicit setting
-    println!("Cpu Binding after explicit bind: {:?}", topo.get_cpubinding());
+    println!("Cpu Binding after explicit bind: {:?}", topo.get_cpubinding(CPUBIND_PROCESS));
+    println!("Cpu Location after explicit bind: {:?}", topo.get_last_cpu_location(CPUBIND_PROCESS));
 }
