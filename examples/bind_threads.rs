@@ -6,6 +6,14 @@ use std::thread;
 use std::sync::{Arc,Mutex};
 
 /// Example which spawns one thread per core and then assigns it to each.
+///
+/// Example Output with 2 cores (no HT) on linux:
+///
+/// ```
+/// Found 2 cores.
+/// Thread 0: Before Some(0-1), After Some(0)
+/// Thread 1: Before Some(0-1), After Some(1)
+/// ```
 fn main() {
     let topo = Arc::new(Mutex::new(Topology::new()));
 
