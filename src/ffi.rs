@@ -254,6 +254,8 @@ extern "C" {
     pub fn hwloc_bitmap_not(result: *mut IntHwlocBitmap, bitmap: *mut IntHwlocBitmap);
     pub fn hwloc_bitmap_first(bitmap: *mut IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_last(bitmap: *mut IntHwlocBitmap) -> c_int;
+    pub fn hwloc_bitmap_dup(src: *const IntHwlocBitmap) -> *mut IntHwlocBitmap;
+    pub fn hwloc_bitmap_compare(left: *const IntHwlocBitmap, right: *const IntHwlocBitmap) -> c_int;
 
     pub fn hwloc_obj_type_snprintf(into: *mut c_char,
                                    size: c_int,

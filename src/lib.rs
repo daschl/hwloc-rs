@@ -12,7 +12,7 @@ mod support;
 
 pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
 
-pub use bitmap::CpuSet;
+pub use bitmap::{CpuSet, NodeSet};
 pub use support::{TopologySupport, TopologyDiscoverySupport, TopologyCpuBindSupport,
                   TopologyMemBindSupport};
 

@@ -5,6 +5,7 @@ use std::fmt;
 use std::ptr;
 use std::ffi::CStr;
 use std::ops::Not;
+use std::clone::Clone;
 
 pub enum IntHwlocBitmap {}
 
@@ -17,12 +18,55 @@ pub type CpuSet = HwlocBitmap;
 pub type NodeSet = HwlocBitmap;
 
 impl HwlocBitmap {
+
+    /// Creates a new empty HwlocBitmap (either CpuSet or NodeSet).
+    ///
+    /// Examples:
+    ///
+    /// ```
+    /// use hwloc::NodeSet;
+    ///
+    /// let bitmap = NodeSet::new();
+    /// assert_eq!("", format!("{}", bitmap));
+    // ```
     pub fn new() -> HwlocBitmap {
         let int_bitmap = unsafe { ffi::hwloc_bitmap_alloc() };
         HwlocBitmap {
             bitmap: int_bitmap,
             manage: true,
         }
+    }
+
+    /// Creates a new HwlocBitmap (either CpuSet or NodeSet) and sets one index right away.
+    ///
+    /// Examples:
+    ///
+    /// ```
+    /// use hwloc::NodeSet;
+    ///
+    /// let bitmap = NodeSet::from(1);
+    /// assert_eq!("1", format!("{}", bitmap));
+    // ```
+    pub fn from(id: u32) -> HwlocBitmap {
+        let mut bitmap = HwlocBitmap::new();
+        bitmap.set(id);
+        bitmap
+    }
+
+    /// Creates a new HwlocBitmap (either CpuSet or NodeSet) and sets the range right away.
+    ///
+    /// Examples:
+    ///
+    /// ```
+    /// use hwloc::CpuSet;
+    ///
+    /// let bitmap = CpuSet::from_range(0, 5);
+    /// assert_eq!("0-5", format!("{}", bitmap));
+    // ```
+    pub fn from_range(begin: u32, end: i32) -> HwlocBitmap {
+        let mut bitmap = HwlocBitmap::new();
+        bitmap.set_range(begin, end);
+        bitmap
     }
 
     /// Wraps the given bitmap pointer into its rust bitmap representation.
@@ -162,6 +206,20 @@ impl fmt::Debug for HwlocBitmap {
     }
 }
 
+impl Clone for HwlocBitmap {
+    fn clone(&self) -> HwlocBitmap {
+        let dup = unsafe { ffi::hwloc_bitmap_dup(self.bitmap) };
+        HwlocBitmap::from_raw(dup, true)
+    }
+}
+
+impl PartialEq for HwlocBitmap {
+    fn eq(&self, other: &Self) -> bool {
+        let result = unsafe { ffi::hwloc_bitmap_compare(self.bitmap, other.as_ptr()) };
+        result == 0
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -176,6 +234,12 @@ mod tests {
         assert!(!bitmap.is_empty());
         bitmap.unset(1);
         assert!(bitmap.is_empty());
+    }
+
+    #[test]
+    fn should_create_by_range() {
+        let bitmap = HwlocBitmap::from_range(0, 5);
+        assert_eq!("0-5", format!("{}", bitmap));
     }
 
     #[test]
@@ -281,6 +345,32 @@ mod tests {
 
         assert_eq!(128, bitmap.first());
         assert_eq!(128, bitmap.last());
+    }
+
+    #[test]
+    fn should_check_equality() {
+        let mut bitmap1 = HwlocBitmap::new();
+        bitmap1.set_range(0, 3);
+
+        let mut bitmap2 = HwlocBitmap::new();
+        bitmap2.set_range(0, 3);
+
+        let mut bitmap3 = HwlocBitmap::new();
+        bitmap3.set_range(1, 5);
+
+        assert_eq!(bitmap1, bitmap2);
+        assert!(bitmap2 == bitmap1);
+        assert!(bitmap1 != bitmap3);
+        assert!(bitmap3 != bitmap2);
+    }
+
+    #[test]
+    fn should_clone() {
+        let mut src = HwlocBitmap::new();
+        src.set_range(0, 3);
+
+        let dst = src.clone();
+        assert_eq!(src, dst);
     }
 
 }
