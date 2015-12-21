@@ -37,9 +37,8 @@ fn main() {
                 // Thread binding before explicit set.
                 let before = locked_topo.get_cpubinding_for_thread(tid, CPUBIND_THREAD);
 
-                // Create a CPU binding for the current thread.
-                let mut bind_to = CpuSet::new();
-                bind_to.set((i as u32));
+                // load the cpuset for the given core index.
+                let bind_to = cpuset_for_core(&*locked_topo, i);
 
                 // Set the binding.
                 locked_topo.set_cpubinding_for_thread(tid, bind_to, CPUBIND_THREAD).unwrap();
@@ -54,6 +53,15 @@ fn main() {
         for h in handles {
             h.join().unwrap();
         }
+}
+
+/// Load the CpuSet for the given core index.
+fn cpuset_for_core(topology: &Topology, idx: usize) -> CpuSet {
+    let cores = (*topology).objects_with_type(&ObjectType::Core).unwrap();
+    match cores.get(idx) {
+        Some(val) => val.cpuset().unwrap(),
+        None => panic!("No Core found with id {}", idx)
+    }
 }
 
 /// Helper method to get the thread id through libc, with current rust stable (1.5.0) its not
