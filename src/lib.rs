@@ -18,7 +18,7 @@ pub use support::{TopologySupport, TopologyDiscoverySupport, TopologyCpuBindSupp
 
 use num::{ToPrimitive, FromPrimitive};
 use errno::errno;
-use libc::pthread_t;
+use libc::{pthread_t, pid_t};
 
 pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
@@ -350,7 +350,7 @@ impl Topology {
         }
     }
 
-    pub fn set_cpubinding_for_pid(&mut self, pid: i32, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding_for_pid(&mut self, pid: pid_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits())
         };
@@ -388,7 +388,7 @@ impl Topology {
         }
     }
 
-    pub fn get_cpubinding_for_pid(&self, pid: i32, flags: CpuBindFlags) -> Option<CpuSet> {
+    pub fn get_cpubinding_for_pid(&self, pid: pid_t, flags: CpuBindFlags) -> Option<CpuSet> {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
         let res = unsafe { ffi::hwloc_get_proc_cpubind(self.topo, pid, raw_set, flags.bits()) };
         if res >= 0 {

@@ -13,7 +13,7 @@ links = "hwloc"
 readme = "README.md"
 
 [dependencies]
-libc = "0.2.3"
+libc = "0.2.4"
 errno = "0.1.5"
 num = "0.1.29"
 bitflags = "0.3.3"
