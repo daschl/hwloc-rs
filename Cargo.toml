@@ -1,6 +1,6 @@
 [package]
 name = "hwloc"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Michael Nitschinger <michael@nitschinger.at>"]
 license = "MIT"
 keywords = ["hwloc"]
