@@ -82,7 +82,7 @@ First, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-hwloc = "0.1.0"
+hwloc = "0.2.0"
 ```
 
 Next, add this to your crate root:
