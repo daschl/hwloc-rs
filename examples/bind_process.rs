@@ -21,10 +21,22 @@ fn main() {
 
     println!("Before Bind: {:?}", topo.get_cpubinding_for_pid(pid, CPUBIND_PROCESS).unwrap());
 
+    // Last CPU Location for this PID
+    println!(
+        "Last Known CPU Location: {:?}",
+        topo.get_last_cpu_location_for_pid(pid, CPUBIND_PROCESS).unwrap()
+    );
+
     // Bind to one core.
     topo.set_cpubinding_for_pid(pid, cpuset, CPUBIND_PROCESS).unwrap();
 
     println!("After Bind: {:?}", topo.get_cpubinding_for_pid(pid, CPUBIND_PROCESS).unwrap());
+
+    // Last CPU Location for this PID
+    println!(
+        "Last Known CPU Location: {:?}",
+        topo.get_last_cpu_location_for_pid(pid, CPUBIND_PROCESS).unwrap()
+    );
 }
 
 /// Find the last core

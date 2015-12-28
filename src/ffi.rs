@@ -214,6 +214,11 @@ extern "C" {
                                        set: *mut IntHwlocBitmap,
                                        flags: c_int)
                                        -> c_int;
+   pub fn hwloc_get_proc_last_cpu_location(topology: *mut HwlocTopology,
+       pid: pid_t,
+       set: *const IntHwlocBitmap,
+       flags: c_int)
+       -> c_int;
     pub fn hwloc_set_proc_cpubind(topology: *mut HwlocTopology,
                                   pid: pid_t,
                                   set: *const IntHwlocBitmap,
@@ -234,7 +239,9 @@ extern "C" {
                                   set: *const IntHwlocBitmap,
                                   flags: c_int)
                                   -> c_int;
-      //int hwloc_get_proc_last_cpu_location(hwloc_topology_t topology, hwloc_pid_t pid, hwloc_cpuset_t set, int flags);
+
+      // === Memory Binding ===
+
 
     // === Bitmap Methods ===
     pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;

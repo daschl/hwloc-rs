@@ -432,6 +432,23 @@ impl Topology {
     		None
     	}
     }
+
+    /// Get the last physical CPU where a process ran.
+    ///
+    /// The operating system may move some tasks from one processor to another at any
+    /// time according to their binding, so this function may return something that is
+    /// already outdated.
+    pub fn get_last_cpu_location_for_pid(&self, pid: pid_t, flags: CpuBindFlags) -> Option<CpuSet> {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe {
+            ffi::hwloc_get_proc_last_cpu_location(self.topo, pid, raw_set, flags.bits())
+        };
+        if res >= 0 {
+            Some(CpuSet::from_raw(raw_set, true))
+        } else {
+            None
+        }
+    }
 }
 
 impl Drop for Topology {
