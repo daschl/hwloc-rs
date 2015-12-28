@@ -333,6 +333,8 @@
 <span id="291">291</span>
 <span id="292">292</span>
 <span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_int</span>, <span class='ident'>c_uint</span>, <span class='ident'>c_ulonglong</span>, <span class='ident'>c_char</span>, <span class='ident'>pid_t</span>, <span class='ident'>pthread_t</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::{<span class='ident'>ToPrimitive</span>, <span class='ident'>FromPrimitive</span>};
@@ -590,6 +592,8 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_bitmap_not</span>(<span class='ident'>result</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>IntHwlocBitmap</span>, <span class='ident'>bitmap</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>IntHwlocBitmap</span>);
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_bitmap_first</span>(<span class='ident'>bitmap</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>IntHwlocBitmap</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_bitmap_last</span>(<span class='ident'>bitmap</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>IntHwlocBitmap</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_bitmap_dup</span>(<span class='ident'>src</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>IntHwlocBitmap</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>IntHwlocBitmap</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_bitmap_compare</span>(<span class='ident'>left</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>IntHwlocBitmap</span>, <span class='ident'>right</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>IntHwlocBitmap</span>) <span class='op'>-&gt;</span> <span class='ident'>c_int</span>;
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hwloc_obj_type_snprintf</span>(<span class='ident'>into</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_char</span>,
                                    <span class='ident'>size</span>: <span class='ident'>c_int</span>,

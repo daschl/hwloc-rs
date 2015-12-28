@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-239' class='srclink' href='../src/hwloc/topology_object.rs.html#11-43' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-244' class='srclink' href='../src/hwloc/topology_object.rs.html#11-43' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct TopologyObject {
     // some fields omitted
 }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a></code></h3><div class='impl-items'><h4 id='method.object_type' class='method'><code>fn <a href='#method.object_type' class='fnname'>object_type</a>(&amp;self) -&gt; <a class='enum' href='../hwloc/enum.ObjectType.html' title='hwloc::ObjectType'>ObjectType</a></code></h4>
@@ -123,7 +123,7 @@ binding, i.e. passing them to the hwloc binding functions should not
 return permission errors. This is usually restricted by administration
 rules. Some of them may however be offline so binding to them may still
 not be possible, see online_cpuset.</p>
-</div><h4 id='method.nodeset' class='method'><code>fn <a href='#method.nodeset' class='fnname'>nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;NodeSet&gt;</code></h4>
+</div><h4 id='method.nodeset' class='method'><code>fn <a href='#method.nodeset' class='fnname'>nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
 <div class='docblock'><p>NUMA nodes covered by this object or containing this object.</p>
 
 <p>This is the set of NUMA nodes for which there are NODE objects in the topology under or
@@ -135,7 +135,7 @@ not be allowed for allocation, see allowed_nodeset.</p>
 
 <p>If there are no NUMA nodes in the machine, all the memory is close to this object, so the
 nodeset is full.</p>
-</div><h4 id='method.complete_nodeset' class='method'><code>fn <a href='#method.complete_nodeset' class='fnname'>complete_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;NodeSet&gt;</code></h4>
+</div><h4 id='method.complete_nodeset' class='method'><code>fn <a href='#method.complete_nodeset' class='fnname'>complete_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
 <div class='docblock'><p>The complete NUMA node set of this object,.</p>
 
 <p>This includes not only the same as the nodeset field, but also the NUMA nodes for which
@@ -146,7 +146,7 @@ that it would be somewhere under this object.</p>
 
 <p>If there are no NUMA nodes in the machine, all the memory is close to this object, so
 complete_nodeset is full.</p>
-</div><h4 id='method.allowed_nodeset' class='method'><code>fn <a href='#method.allowed_nodeset' class='fnname'>allowed_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;NodeSet&gt;</code></h4>
+</div><h4 id='method.allowed_nodeset' class='method'><code>fn <a href='#method.allowed_nodeset' class='fnname'>allowed_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
 <div class='docblock'><p>The set of allowed NUMA memory nodes.</p>
 
 <p>This includes the NUMA memory nodes contained in this object which are allowed for memory

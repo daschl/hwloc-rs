@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["HwlocBitmap",""]],"type":[["CpuSet",""]]});
+initSidebarItems({"struct":[["HwlocBitmap",""]],"type":[["CpuSet",""],["NodeSet",""]]});
