@@ -245,6 +245,7 @@ extern "C" {
 
     // === Bitmap Methods ===
     pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;
+    pub fn hwloc_bitmap_alloc_full() -> *mut IntHwlocBitmap;
     pub fn hwloc_bitmap_free(bitmap: *mut IntHwlocBitmap);
     pub fn hwloc_bitmap_list_asprintf(strp: *mut *mut c_char,
                                       bitmap: *mut IntHwlocBitmap)
@@ -263,6 +264,9 @@ extern "C" {
     pub fn hwloc_bitmap_last(bitmap: *mut IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_dup(src: *const IntHwlocBitmap) -> *mut IntHwlocBitmap;
     pub fn hwloc_bitmap_compare(left: *const IntHwlocBitmap, right: *const IntHwlocBitmap) -> c_int;
+    pub fn hwloc_bitmap_isequal(left: *const IntHwlocBitmap, right: *const IntHwlocBitmap) -> c_int;
+    pub fn hwloc_bitmap_isfull(bitmap: *const IntHwlocBitmap) -> c_int;
+    pub fn hwloc_bitmap_next(bitmap: *const IntHwlocBitmap, prev: c_int) -> c_int;
 
     pub fn hwloc_obj_type_snprintf(into: *mut c_char,
                                    size: c_int,

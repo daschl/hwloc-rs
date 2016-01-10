@@ -11,16 +11,14 @@ mod bitmap;
 mod support;
 
 pub use ffi::{ObjectType, TypeDepthError, TopologyFlag};
-
-pub use bitmap::{CpuSet, NodeSet};
+pub use bitmap::{Bitmap, CpuSet, NodeSet};
 pub use support::{TopologySupport, TopologyDiscoverySupport, TopologyCpuBindSupport,
                   TopologyMemBindSupport};
+pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
 use num::{ToPrimitive, FromPrimitive};
 use errno::errno;
 use libc::{pthread_t, pid_t};
-
-pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
 pub struct Topology {
     topo: *mut ffi::HwlocTopology,
@@ -473,28 +471,55 @@ bitflags! {
     ///
     /// **Note:** Not all systems support all kinds of binding.
     ///
-    /// The following flags are available:
+    /// The following flags (constants) are available:
     ///
     /// - **CPUBIND_PROCESS:** Bind all threads of the current (possibly) multithreaded process.
     /// - **CPUBIND_THREAD:** Bind current thread of current process.
     /// - **CPUBIND_STRICT:** Request for strict binding from the OS.
     /// - **CPUBIND_NO_MEMBIND:** Avoid any effect on memory binding.
     flags CpuBindFlags: i32 {
+        /// Bind all threads of the current (possibly) multithreaded process.
         const CPUBIND_PROCESS = (1<<0),
+        /// Bind current thread of current process.
         const CPUBIND_THREAD  = (1<<1),
+        /// Request for strict binding from the OS.
         const CPUBIND_STRICT = (1<<2),
+        /// Avoid any effect on memory binding.
         const CPUBIND_NO_MEMBIND = (1<<3),
     }
 }
 
 bitflags! {
     flags MemBindPolicy: i32 {
+        /// Reset the memory allocation policy to the system default. Depending on the operating
+        /// system, this may correspond to MEMBIND_FIRSTTOUCH (Linux), or MEMBIND_BIND (AIX,
+        /// HP-UX, OSF, Solaris, Windows).
         const MEMBIND_DEFAULT = 0,
+        /// Allocate memory but do not immediately bind it to a specific locality. Instead,
+        /// each page in the allocation is bound only when it is first touched. Pages are
+        /// individually bound to the local NUMA node of the first thread that touches it. If
+        /// there is not enough memory on the node, allocation may be done in the specified
+        /// cpuset before allocating on other nodes.
         const MEMBIND_FIRSTTOUCH = 1,
+        /// Allocate memory on the specified nodes.
         const MEMBIND_BIND = 2,
+        /// Allocate memory on the given nodes in an interleaved / round-robin manner.
+        /// The precise layout of the memory across multiple NUMA nodes is OS/system specific.
+        /// Interleaving can be useful when threads distributed across the specified NUMA nodes
+        /// will all be accessing the whole memory range concurrently, since the interleave will
+        /// then balance the memory references.
         const MEMBIND_INTERLEAVE = 3,
+        /// Replicate memory on the given nodes; reads from this memory will attempt to be
+        /// serviced from the NUMA node local to the reading thread. Replicating can be useful
+        /// when multiple threads from the specified NUMA nodes will be sharing the same read-only
+        /// data.
         const MEMBIND_REPLICATE = 4,
+        /// For each page bound with this policy, by next time it is touched (and next time
+        /// only), it is moved from its current location to the local NUMA node of the thread
+        /// where the memory reference occurred (if it needs to be moved at all).
         const MEMBIND_NEXTTOUCH = 5,
+        /// Returned by get_membind() functions when multiple threads or parts of a memory
+        /// area have differing memory binding policies.
         const MEMBIND_MIXED = -1,
     }
 }
