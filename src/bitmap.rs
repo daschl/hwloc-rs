@@ -4,6 +4,7 @@ use std::{fmt, ptr};
 use std::ffi::CStr;
 use std::ops::Not;
 use std::clone::Clone;
+use std::iter::FromIterator;
 
 pub enum IntHwlocBitmap {}
 
@@ -410,7 +411,7 @@ impl PartialEq for Bitmap {
 }
 
 impl IntoIterator for Bitmap {
-    type Item = i32;
+    type Item = u32;
     type IntoIter = BitmapIntoIterator;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -424,16 +425,26 @@ pub struct BitmapIntoIterator {
 }
 
 impl Iterator for BitmapIntoIterator {
-    type Item = i32;
+    type Item = u32;
 
-    fn next(&mut self) -> Option<i32> {
+    fn next(&mut self) -> Option<u32> {
         let result = unsafe { ffi::hwloc_bitmap_next(self.bitmap.as_ptr(), self.index) };
         self.index = result;
         if result < 0 {
             None
         } else {
-            Some(result)
+            Some(result as u32)
         }
+    }
+}
+
+impl FromIterator<u32> for Bitmap {
+    fn from_iter<I: IntoIterator<Item = u32>>(iter: I) -> Bitmap {
+        let mut bitmap = Bitmap::new();
+        for i in iter {
+            bitmap.set(i);
+        }
+        bitmap
     }
 }
 
@@ -595,9 +606,15 @@ mod tests {
         let mut bitmap = Bitmap::from_range(4, 8);
         bitmap.set(2);
 
-        let collected = bitmap.into_iter().collect::<Vec<i32>>();
+        let collected = bitmap.into_iter().collect::<Vec<u32>>();
         assert_eq!(6, collected.len());
         assert_eq!(vec![2, 4, 5, 6, 7, 8], collected);
+    }
+
+    #[test]
+    fn should_support_from_iter() {
+        let bitmap = (1..10).collect::<Bitmap>();
+        assert_eq!("1-9", format!("{}", bitmap));
     }
 
 }
