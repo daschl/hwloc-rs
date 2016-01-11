@@ -43,7 +43,6 @@ pub struct TopologyObject {
 }
 
 impl TopologyObject {
-
     /// The type of the object.
     pub fn object_type(&self) -> ObjectType {
         self.object_type.clone()

@@ -10,12 +10,17 @@ pub struct TopologySupport {
 
 impl fmt::Debug for TopologySupport {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        unsafe { write!(f, "{:?}, {:?}, {:?}", *self.discovery, *self.cpubind, *self.membind) }
+        unsafe {
+            write!(f,
+                   "{:?}, {:?}, {:?}",
+                   *self.discovery,
+                   *self.cpubind,
+                   *self.membind)
+        }
     }
 }
 
 impl TopologySupport {
-
     pub fn discovery(&self) -> &TopologyDiscoverySupport {
         unsafe { &*self.discovery }
     }
@@ -36,12 +41,10 @@ pub struct TopologyDiscoverySupport {
 }
 
 impl TopologyDiscoverySupport {
-
     /// Detecting the number of PU objects is supported.
     pub fn pu(&self) -> bool {
         self.pu == 1
     }
-
 }
 
 /// Flags describing actual PU binding support for this topology.
@@ -140,7 +143,6 @@ pub struct TopologyMemBindSupport {
 }
 
 impl TopologyMemBindSupport {
-
     /// Binding the whole current process is supported.
     pub fn set_current_process(&self) -> bool {
         self.set_thisproc == 1

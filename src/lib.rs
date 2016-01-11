@@ -335,9 +335,7 @@ impl Topology {
 
     /// Bind current process or thread on cpus given in physical bitmap set.
     pub fn set_cpubinding(&mut self, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
-        let result = unsafe {
-            ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits())
-        };
+        let result = unsafe { ffi::hwloc_set_cpubind(self.topo, set.as_ptr(), flags.bits()) };
 
         match result {
             r if r < 0 => {
@@ -348,7 +346,11 @@ impl Topology {
         }
     }
 
-    pub fn set_cpubinding_for_pid(&mut self, pid: pid_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding_for_pid(&mut self,
+                                  pid: pid_t,
+                                  set: CpuSet,
+                                  flags: CpuBindFlags)
+                                  -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits())
         };
@@ -362,7 +364,11 @@ impl Topology {
         }
     }
 
-    pub fn set_cpubinding_for_thread(&mut self, tid: pthread_t, set: CpuSet, flags: CpuBindFlags) -> Result<(), CpuBindError> {
+    pub fn set_cpubinding_for_thread(&mut self,
+                                     tid: pthread_t,
+                                     set: CpuSet,
+                                     flags: CpuBindFlags)
+                                     -> Result<(), CpuBindError> {
         let result = unsafe {
             ffi::hwloc_set_thread_cpubind(self.topo, tid, set.as_ptr(), flags.bits())
         };
@@ -380,9 +386,9 @@ impl Topology {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
         let res = unsafe { ffi::hwloc_get_thread_cpubind(self.topo, tid, raw_set, flags.bits()) };
         if res >= 0 {
-        	Some(CpuSet::from_raw(raw_set, true))
+            Some(CpuSet::from_raw(raw_set, true))
         } else {
-        	None
+            None
         }
     }
 
@@ -390,9 +396,9 @@ impl Topology {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
         let res = unsafe { ffi::hwloc_get_proc_cpubind(self.topo, pid, raw_set, flags.bits()) };
         if res >= 0 {
-        	Some(CpuSet::from_raw(raw_set, true))
+            Some(CpuSet::from_raw(raw_set, true))
         } else {
-        	None
+            None
         }
     }
 
@@ -401,9 +407,9 @@ impl Topology {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
         let res = unsafe { ffi::hwloc_get_cpubind(self.topo, raw_set, flags.bits()) };
         if res >= 0 {
-        	Some(CpuSet::from_raw(raw_set, true))
+            Some(CpuSet::from_raw(raw_set, true))
         } else {
-        	None
+            None
         }
     }
 
@@ -420,15 +426,13 @@ impl Topology {
     /// process is single-threaded, flags can be set to zero to let hwloc use
     /// whichever method is available on the underlying OS.
     pub fn get_last_cpu_location(&self, flags: CpuBindFlags) -> Option<CpuSet> {
-    	let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-    	let res = unsafe {
-            ffi::hwloc_get_last_cpu_location(self.topo, raw_set, flags.bits())
-        };
-    	if res >= 0 {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe { ffi::hwloc_get_last_cpu_location(self.topo, raw_set, flags.bits()) };
+        if res >= 0 {
             Some(CpuSet::from_raw(raw_set, true))
-    	} else {
-    		None
-    	}
+        } else {
+            None
+        }
     }
 
     /// Get the last physical CPU where a process ran.
@@ -593,7 +597,8 @@ mod tests {
         assert_eq!("1", format!("{:b}", CPUBIND_PROCESS.bits()));
         assert_eq!("10", format!("{:b}", CPUBIND_THREAD.bits()));
         assert_eq!("100", format!("{:b}", CPUBIND_STRICT.bits()));
-        assert_eq!("101", format!("{:b}", (CPUBIND_STRICT | CPUBIND_PROCESS).bits()));
+        assert_eq!("101",
+                   format!("{:b}", (CPUBIND_STRICT | CPUBIND_PROCESS).bits()));
     }
 
 }

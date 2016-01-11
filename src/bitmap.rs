@@ -28,7 +28,6 @@ pub type CpuSet = Bitmap;
 pub type NodeSet = Bitmap;
 
 impl Bitmap {
-
     /// Creates an empty `Bitmap`.
     ///
     /// Examples:
@@ -42,7 +41,10 @@ impl Bitmap {
     // ```
     pub fn new() -> Bitmap {
         let bitmap = unsafe { ffi::hwloc_bitmap_alloc() };
-        Bitmap { bitmap: bitmap, manage: true }
+        Bitmap {
+            bitmap: bitmap,
+            manage: true,
+        }
     }
 
     /// Creates a full `Bitmap`.
@@ -58,7 +60,10 @@ impl Bitmap {
     // ```
     pub fn full() -> Bitmap {
         let bitmap = unsafe { ffi::hwloc_bitmap_alloc_full() };
-        Bitmap { bitmap: bitmap, manage: true }
+        Bitmap {
+            bitmap: bitmap,
+            manage: true,
+        }
     }
 
     /// Creates a new HwlocBitmap (either CpuSet or NodeSet) and sets one index right away.
@@ -99,7 +104,10 @@ impl Bitmap {
     /// This function is not meant to be used directly, it rather serves as the
     /// conversion factory when dealing with hwloc-internal structures.
     pub fn from_raw(bitmap: *mut IntHwlocBitmap, manage: bool) -> Bitmap {
-        Bitmap { bitmap: bitmap, manage: manage }
+        Bitmap {
+            bitmap: bitmap,
+            manage: manage,
+        }
     }
 
     /// Returns the containted hwloc bitmap pointer for interaction with hwloc.
@@ -415,7 +423,10 @@ impl IntoIterator for Bitmap {
     type IntoIter = BitmapIntoIterator;
 
     fn into_iter(self) -> Self::IntoIter {
-        BitmapIntoIterator { bitmap: self, index: -1 }
+        BitmapIntoIterator {
+            bitmap: self,
+            index: -1,
+        }
     }
 }
 

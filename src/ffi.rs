@@ -214,11 +214,11 @@ extern "C" {
                                        set: *mut IntHwlocBitmap,
                                        flags: c_int)
                                        -> c_int;
-   pub fn hwloc_get_proc_last_cpu_location(topology: *mut HwlocTopology,
-       pid: pid_t,
-       set: *const IntHwlocBitmap,
-       flags: c_int)
-       -> c_int;
+    pub fn hwloc_get_proc_last_cpu_location(topology: *mut HwlocTopology,
+                                            pid: pid_t,
+                                            set: *const IntHwlocBitmap,
+                                            flags: c_int)
+                                            -> c_int;
     pub fn hwloc_set_proc_cpubind(topology: *mut HwlocTopology,
                                   pid: pid_t,
                                   set: *const IntHwlocBitmap,
@@ -230,17 +230,17 @@ extern "C" {
                                   flags: c_int)
                                   -> c_int;
     pub fn hwloc_set_thread_cpubind(topology: *mut HwlocTopology,
-                                thread: pthread_t,
-                                set: *const IntHwlocBitmap,
-                                flags: c_int)
-                                -> c_int;
+                                    thread: pthread_t,
+                                    set: *const IntHwlocBitmap,
+                                    flags: c_int)
+                                    -> c_int;
     pub fn hwloc_get_thread_cpubind(topology: *mut HwlocTopology,
-                                  pid: pthread_t,
-                                  set: *const IntHwlocBitmap,
-                                  flags: c_int)
-                                  -> c_int;
+                                    pid: pthread_t,
+                                    set: *const IntHwlocBitmap,
+                                    flags: c_int)
+                                    -> c_int;
 
-      // === Memory Binding ===
+    // === Memory Binding ===
 
 
     // === Bitmap Methods ===
@@ -263,8 +263,12 @@ extern "C" {
     pub fn hwloc_bitmap_first(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_last(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_dup(src: *const IntHwlocBitmap) -> *mut IntHwlocBitmap;
-    pub fn hwloc_bitmap_compare(left: *const IntHwlocBitmap, right: *const IntHwlocBitmap) -> c_int;
-    pub fn hwloc_bitmap_isequal(left: *const IntHwlocBitmap, right: *const IntHwlocBitmap) -> c_int;
+    pub fn hwloc_bitmap_compare(left: *const IntHwlocBitmap,
+                                right: *const IntHwlocBitmap)
+                                -> c_int;
+    pub fn hwloc_bitmap_isequal(left: *const IntHwlocBitmap,
+                                right: *const IntHwlocBitmap)
+                                -> c_int;
     pub fn hwloc_bitmap_isfull(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_next(bitmap: *const IntHwlocBitmap, prev: c_int) -> c_int;
 
