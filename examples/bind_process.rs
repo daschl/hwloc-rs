@@ -19,23 +19,23 @@ fn main() {
     // Get only one logical processor (in case the core is SMT/hyper-threaded).
     cpuset.singlify();
 
-    println!("Before Bind: {:?}", topo.get_cpubinding_for_pid(pid, CPUBIND_PROCESS).unwrap());
+    println!("Before Bind: {:?}", topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
 
     // Last CPU Location for this PID
     println!(
         "Last Known CPU Location: {:?}",
-        topo.get_last_cpu_location_for_pid(pid, CPUBIND_PROCESS).unwrap()
+        topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap()
     );
 
     // Bind to one core.
-    topo.set_cpubinding_for_pid(pid, cpuset, CPUBIND_PROCESS).unwrap();
+    topo.set_cpubind_for_process(pid, cpuset, CPUBIND_PROCESS).unwrap();
 
-    println!("After Bind: {:?}", topo.get_cpubinding_for_pid(pid, CPUBIND_PROCESS).unwrap());
+    println!("After Bind: {:?}", topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
 
     // Last CPU Location for this PID
     println!(
         "Last Known CPU Location: {:?}",
-        topo.get_last_cpu_location_for_pid(pid, CPUBIND_PROCESS).unwrap()
+        topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap()
     );
 }
 

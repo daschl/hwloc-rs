@@ -26,18 +26,18 @@ fn main() {
     cpuset.singlify();
 
     // Print the current cpu binding before explicit setting
-    println!("Cpu Binding before explicit bind: {:?}", topo.get_cpubinding(CPUBIND_PROCESS));
-    println!("Cpu Location before explicit bind: {:?}", topo.get_last_cpu_location(CPUBIND_PROCESS));
+    println!("Cpu Binding before explicit bind: {:?}", topo.get_cpubind(CPUBIND_PROCESS));
+    println!("Cpu Location before explicit bind: {:?}", topo.get_cpu_location(CPUBIND_PROCESS));
 
     // Try to bind all threads of the current (possibly multithreaded) process.
-    match topo.set_cpubinding(cpuset, CPUBIND_PROCESS) {
+    match topo.set_cpubind(cpuset, CPUBIND_PROCESS) {
         Ok(_) => println!("Correctly bound to last core"),
         Err(e) => println!("Failed to bind: {:?}", e)
     }
 
     // Print the current cpu binding after explicit setting
-    println!("Cpu Binding after explicit bind: {:?}", topo.get_cpubinding(CPUBIND_PROCESS));
-    println!("Cpu Location after explicit bind: {:?}", topo.get_last_cpu_location(CPUBIND_PROCESS));
+    println!("Cpu Binding after explicit bind: {:?}", topo.get_cpubind(CPUBIND_PROCESS));
+    println!("Cpu Location after explicit bind: {:?}", topo.get_cpu_location(CPUBIND_PROCESS));
 }
 
 /// Find the last core
