@@ -16,11 +16,12 @@ notifications:
 branches:
   only:
     - master
-before_install:
-  - brew update
-  - brew install hwloc
 addons:
   apt:
     packages:
       - hwloc
       - libhwloc-dev
+install:
+  - wget http://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.1.tar.gz
+  - tar -xzvf hwloc-1.11.1.tar.gz
+  - cd hwloc-1.11.1  && ./configure && make && sudo make install
