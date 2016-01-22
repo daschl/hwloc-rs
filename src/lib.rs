@@ -15,13 +15,13 @@
 //!
 //! Next, add this to your crate root:
 //!
-//! ```rust
+//! ```no_run
 //! extern crate hwloc;
 //! ```
 //!
 //! Here is a quick example which walks the `Topology` and prints it out:
 //!
-//! ```rust
+//! ```no_run
 //! extern crate hwloc;
 //!
 //! use hwloc::Topology;
