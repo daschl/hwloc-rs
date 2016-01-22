@@ -1,3 +1,82 @@
+//! Rust Bindings for the Hwloc library
+//!
+//! This library is a rust binding to the hwloc C library, which provides a portable abstraction
+//! of the hierarchical topology of modern architectures, including NUMA memory nodes, sockets,
+//! shared caches, cores and simultaneous multithreading.
+//!
+//! # Usage
+//!
+//! First, add the following to your `Cargo.toml`:
+//!
+//! ```toml
+//! [dependencies]
+//! hwloc = "0.2.0"
+//! ```
+//!
+//! Next, add this to your crate root:
+//!
+//! ```rust
+//! extern crate hwloc;
+//! ```
+//!
+//! Here is a quick example which walks the `Topology` and prints it out:
+//!
+//! ```rust
+//! extern crate hwloc;
+//!
+//! use hwloc::Topology;
+//!
+//! fn main() {
+//! 	let topo = Topology::new();
+//!
+//! 	for i in 0..topo.depth() {
+//! 		println!("*** Objects at level {}", i);
+//!
+//! 		for (idx, object) in topo.objects_at_depth(i).iter().enumerate() {
+//! 			println!("{}: {}", idx, object);
+//! 		}
+//! 	}
+//! }
+//! ```
+//!
+//! You can also [look at](https://github.com/daschl/hwloc-rs/tree/master/examples)
+//! more examples, if you want to run them check out the next section below.
+//!
+//! # Running Examples
+//! The library ships with examples, and to run them you need to clone the repository
+//! and then run them through `cargo run --example=`.
+//!
+//! ```
+//! $ git clone https://github.com/daschl/hwloc-rs.git
+//! $ cd hwloc-rs
+//! ```
+//!
+//! To run an example (which will download the dependencies and build it) you can
+//! use `cargo run -example=`:
+//!
+//! ```bash
+//! $ cargo run --example=walk_tree
+//!    Compiling libc v0.2.3
+//!    ...
+//!    Compiling hwloc v0.2.0 (file:///vagrant/hwloc-rs)
+//!      Running `target/debug/examples/walk_tree`
+//! *** Printing overall tree
+//! Machine (490MB): #0
+//!  Socket (): #0
+//!   L2d (6144KB): #4294967295
+//!    L1d (32KB): #4294967295
+//!     Core (): #0
+//!      PU (): #0
+//!   L1d (32KB): #4294967295
+//!     Core (): #1
+//!      PU (): #1
+//! ```
+//!
+//! # License
+//! This project uses the MIT license, please see the
+//! [LICENSE](https://github.com/daschl/hwloc-rs/blob/master/LICENSE) file for more
+//! information.
+
 #![allow(dead_code)]
 #[macro_use]
 extern crate bitflags;

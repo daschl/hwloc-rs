@@ -21,6 +21,7 @@ Here is a table of the version compatibility that we try to test for:
 |----------|--------|
 | 0.1      | 1.11.1 |
 | 0.2      | 1.11.1 |
+| 0.3      | 1.11.2 |
 
 ### Install hwloc on OS X
 The easiest way is to download, build and install the sources from the website.
