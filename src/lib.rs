@@ -46,7 +46,7 @@
 //! The library ships with examples, and to run them you need to clone the repository
 //! and then run them through `cargo run --example=`.
 //!
-//! ```
+//! ```bash
 //! $ git clone https://github.com/daschl/hwloc-rs.git
 //! $ cd hwloc-rs
 //! ```
