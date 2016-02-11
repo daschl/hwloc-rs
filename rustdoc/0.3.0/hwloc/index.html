@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `hwloc` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, hwloc">
+
+    <title>hwloc - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'hwloc', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>hwloc</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/hwloc/lib.rs.html#1-687' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Rust Bindings for the Hwloc library</p>
+
+<p>This library is a rust binding to the hwloc C library, which provides a portable abstraction
+of the hierarchical topology of modern architectures, including NUMA memory nodes, sockets,
+shared caches, cores and simultaneous multithreading.</p>
+
+<h1 id='usage' class='section-header'><a href='#usage'>Usage</a></h1>
+<p>First, add the following to your <code>Cargo.toml</code>:</p>
+
+<pre><code class="language-toml">[dependencies]
+hwloc = &quot;0.3.0&quot;
+</code></pre>
+
+<p>Next, add this to your crate root:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hwloc</span>;</pre>
+
+<p>Here is a quick example which walks the <code>Topology</code> and prints it out:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hwloc</span>;
+
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Topology</span>;
+
+<span class='kw'>fn</span> <span class='ident'>main</span>() {
+    <span class='kw'>let</span> <span class='ident'>topo</span> <span class='op'>=</span> <span class='ident'>Topology</span>::<span class='ident'>new</span>();
+
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>topo</span>.<span class='ident'>depth</span>() {
+        <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;*** Objects at level {}&quot;</span>, <span class='ident'>i</span>);
+
+        <span class='kw'>for</span> (<span class='ident'>idx</span>, <span class='ident'>object</span>) <span class='kw'>in</span> <span class='ident'>topo</span>.<span class='ident'>objects_at_depth</span>(<span class='ident'>i</span>).<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
+            <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}: {}&quot;</span>, <span class='ident'>idx</span>, <span class='ident'>object</span>);
+        }
+    }
+}</pre>
+
+<p>You can also <a href="https://github.com/daschl/hwloc-rs/tree/master/examples">look at</a>
+more examples, if you want to run them check out the next section below.</p>
+
+<h1 id='running-examples' class='section-header'><a href='#running-examples'>Running Examples</a></h1>
+<p>The library ships with examples, and to run them you need to clone the repository
+and then run them through <code>cargo run --example=</code>.</p>
+
+<pre><code class="language-bash">$ git clone https://github.com/daschl/hwloc-rs.git
+$ cd hwloc-rs
+</code></pre>
+
+<p>To run an example (which will download the dependencies and build it) you can
+use <code>cargo run -example=</code>:</p>
+
+<pre><code class="language-bash">$ cargo run --example=walk_tree
+   Compiling libc v0.2.3
+   ...
+   Compiling hwloc v0.2.0 (file:///vagrant/hwloc-rs)
+     Running `target/debug/examples/walk_tree`
+*** Printing overall tree
+Machine (490MB): #0
+ Socket (): #0
+  L2d (6144KB): #4294967295
+   L1d (32KB): #4294967295
+    Core (): #0
+     PU (): #0
+  L1d (32KB): #4294967295
+    Core (): #1
+     PU (): #1
+</code></pre>
+
+<h1 id='license' class='section-header'><a href='#license'>License</a></h1>
+<p>This project uses the MIT license, please see the
+<a href="https://github.com/daschl/hwloc-rs/blob/master/LICENSE">LICENSE</a> file for more
+information.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Bitmap.html'
+                               title='hwloc::Bitmap'>Bitmap</a></td>
+                        <td class='docblock short'>
+                             <p>A generic bitmap, understood by hwloc.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CpuBindFlags.html'
+                               title='hwloc::CpuBindFlags'>CpuBindFlags</a></td>
+                        <td class='docblock short'>
+                             <p>Process/Thread binding flags.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.MemBindPolicy.html'
+                               title='hwloc::MemBindPolicy'>MemBindPolicy</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Topology.html'
+                               title='hwloc::Topology'>Topology</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologyCpuBindSupport.html'
+                               title='hwloc::TopologyCpuBindSupport'>TopologyCpuBindSupport</a></td>
+                        <td class='docblock short'>
+                             <p>Flags describing actual PU binding support for this topology.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologyDiscoverySupport.html'
+                               title='hwloc::TopologyDiscoverySupport'>TopologyDiscoverySupport</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologyMemBindSupport.html'
+                               title='hwloc::TopologyMemBindSupport'>TopologyMemBindSupport</a></td>
+                        <td class='docblock short'>
+                             <p>Flags describing actual memory binding support for this topology.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologyObject.html'
+                               title='hwloc::TopologyObject'>TopologyObject</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologyObjectMemory.html'
+                               title='hwloc::TopologyObjectMemory'>TopologyObjectMemory</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TopologySupport.html'
+                               title='hwloc::TopologySupport'>TopologySupport</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.CpuBindError.html'
+                               title='hwloc::CpuBindError'>CpuBindError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.ObjectType.html'
+                               title='hwloc::ObjectType'>ObjectType</a></td>
+                        <td class='docblock short'>
+                             <p>Represents the type of a topology object.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.TopologyFlag.html'
+                               title='hwloc::TopologyFlag'>TopologyFlag</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.TypeDepthError.html'
+                               title='hwloc::TypeDepthError'>TypeDepthError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CPUBIND_NO_MEMBIND.html'
+                               title='hwloc::CPUBIND_NO_MEMBIND'>CPUBIND_NO_MEMBIND</a></td>
+                        <td class='docblock short'>
+                             <p>Avoid any effect on memory binding.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CPUBIND_PROCESS.html'
+                               title='hwloc::CPUBIND_PROCESS'>CPUBIND_PROCESS</a></td>
+                        <td class='docblock short'>
+                             <p>Bind all threads of the current (possibly) multithreaded process.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CPUBIND_STRICT.html'
+                               title='hwloc::CPUBIND_STRICT'>CPUBIND_STRICT</a></td>
+                        <td class='docblock short'>
+                             <p>Request for strict binding from the OS.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CPUBIND_THREAD.html'
+                               title='hwloc::CPUBIND_THREAD'>CPUBIND_THREAD</a></td>
+                        <td class='docblock short'>
+                             <p>Bind current thread of current process.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_BIND.html'
+                               title='hwloc::MEMBIND_BIND'>MEMBIND_BIND</a></td>
+                        <td class='docblock short'>
+                             <p>Allocate memory on the specified nodes.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_DEFAULT.html'
+                               title='hwloc::MEMBIND_DEFAULT'>MEMBIND_DEFAULT</a></td>
+                        <td class='docblock short'>
+                             <p>Reset the memory allocation policy to the system default. Depending on the operating
+system, this may correspond to MEMBIND_FIRSTTOUCH (Linux), or MEMBIND_BIND (AIX,
+HP-UX, OSF, Solaris, Windows).</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_FIRSTTOUCH.html'
+                               title='hwloc::MEMBIND_FIRSTTOUCH'>MEMBIND_FIRSTTOUCH</a></td>
+                        <td class='docblock short'>
+                             <p>Allocate memory but do not immediately bind it to a specific locality. Instead,
+each page in the allocation is bound only when it is first touched. Pages are
+individually bound to the local NUMA node of the first thread that touches it. If
+there is not enough memory on the node, allocation may be done in the specified
+cpuset before allocating on other nodes.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_INTERLEAVE.html'
+                               title='hwloc::MEMBIND_INTERLEAVE'>MEMBIND_INTERLEAVE</a></td>
+                        <td class='docblock short'>
+                             <p>Allocate memory on the given nodes in an interleaved / round-robin manner.
+The precise layout of the memory across multiple NUMA nodes is OS/system specific.
+Interleaving can be useful when threads distributed across the specified NUMA nodes
+will all be accessing the whole memory range concurrently, since the interleave will
+then balance the memory references.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_MIXED.html'
+                               title='hwloc::MEMBIND_MIXED'>MEMBIND_MIXED</a></td>
+                        <td class='docblock short'>
+                             <p>Returned by get_membind() functions when multiple threads or parts of a memory
+area have differing memory binding policies.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_NEXTTOUCH.html'
+                               title='hwloc::MEMBIND_NEXTTOUCH'>MEMBIND_NEXTTOUCH</a></td>
+                        <td class='docblock short'>
+                             <p>For each page bound with this policy, by next time it is touched (and next time
+only), it is moved from its current location to the local NUMA node of the thread
+where the memory reference occurred (if it needs to be moved at all).</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.MEMBIND_REPLICATE.html'
+                               title='hwloc::MEMBIND_REPLICATE'>MEMBIND_REPLICATE</a></td>
+                        <td class='docblock short'>
+                             <p>Replicate memory on the given nodes; reads from this memory will attempt to be
+serviced from the NUMA node local to the reading thread. Replicating can be useful
+when multiple threads from the specified NUMA nodes will be sharing the same read-only
+data.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.CpuSet.html'
+                               title='hwloc::CpuSet'>CpuSet</a></td>
+                        <td class='docblock short'>
+                             <p>A <code>CpuSet</code> is a <code>Bitmap</code> whose bits are set according to CPU physical OS indexes.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.NodeSet.html'
+                               title='hwloc::NodeSet'>NodeSet</a></td>
+                        <td class='docblock short'>
+                             <p>A <code>NodeSet</code> is a <code>Bitmap</code> whose bits are set according to NUMA memory node physical OS indexes.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "hwloc";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

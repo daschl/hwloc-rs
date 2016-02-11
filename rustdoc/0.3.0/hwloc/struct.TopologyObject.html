@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `TopologyObject` struct in crate `hwloc`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TopologyObject">
+
+    <title>hwloc::TopologyObject - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>hwloc</a></p><script>window.sidebarCurrent = {name: 'TopologyObject', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>hwloc</a>::<wbr><a class='struct' href=''>TopologyObject</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-283' class='srclink' href='../src/hwloc/topology_object.rs.html#11-43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct TopologyObject {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a></code></h3><div class='impl-items'><h4 id='method.object_type' class='method'><code>fn <a href='#method.object_type' class='fnname'>object_type</a>(&amp;self) -&gt; <a class='enum' href='../hwloc/enum.ObjectType.html' title='hwloc::ObjectType'>ObjectType</a></code></h4>
+<div class='docblock'><p>The type of the object.</p>
+</div><h4 id='method.memory' class='method'><code>fn <a href='#method.memory' class='fnname'>memory</a>(&amp;self) -&gt; &amp;<a class='struct' href='../hwloc/struct.TopologyObjectMemory.html' title='hwloc::TopologyObjectMemory'>TopologyObjectMemory</a></code></h4>
+<div class='docblock'><p>The memory attributes of the object.</p>
+</div><h4 id='method.os_index' class='method'><code>fn <a href='#method.os_index' class='fnname'>os_index</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>The OS-provided physical index number.</p>
+
+<p>It is not guaranteed unique across the entire machine,
+except for PUs and NUMA nodes.</p>
+</div><h4 id='method.name' class='method'><code>fn <a href='#method.name' class='fnname'>name</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>The name of the object, if set.</p>
+</div><h4 id='method.depth' class='method'><code>fn <a href='#method.depth' class='fnname'>depth</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>Vertical index in the hierarchy.</p>
+
+<p>If the topology is symmetric, this is equal to the parent
+depth plus one, and also equal to the number of parent/child
+links from the root object to here.</p>
+</div><h4 id='method.logical_index' class='method'><code>fn <a href='#method.logical_index' class='fnname'>logical_index</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>Horizontal index in the whole list of similar objects, hence guaranteed
+unique across the entire machine.</p>
+
+<p>Could be a &quot;cousin_rank&quot; since it&#39;s the rank within the &quot;cousin&quot; list below.</p>
+</div><h4 id='method.sibling_rank' class='method'><code>fn <a href='#method.sibling_rank' class='fnname'>sibling_rank</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>This objects index in the parents children list.</p>
+</div><h4 id='method.arity' class='method'><code>fn <a href='#method.arity' class='fnname'>arity</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>The number of direct children.</p>
+</div><h4 id='method.symmetric_subtree' class='method'><code>fn <a href='#method.symmetric_subtree' class='fnname'>symmetric_subtree</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Set if the subtree of objects below this object is symmetric, which means all
+children and their children have identical subtrees.</p>
+</div><h4 id='method.children' class='method'><code>fn <a href='#method.children' class='fnname'>children</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>All direct children of this object.</p>
+</div><h4 id='method.next_cousin' class='method'><code>fn <a href='#method.next_cousin' class='fnname'>next_cousin</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Next object of same type and depth.</p>
+</div><h4 id='method.prev_cousin' class='method'><code>fn <a href='#method.prev_cousin' class='fnname'>prev_cousin</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Previous object of same type and depth.</p>
+</div><h4 id='method.first_child' class='method'><code>fn <a href='#method.first_child' class='fnname'>first_child</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>First child of the next depth.</p>
+</div><h4 id='method.last_child' class='method'><code>fn <a href='#method.last_child' class='fnname'>last_child</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Last child of the next depth.</p>
+</div><h4 id='method.parent' class='method'><code>fn <a href='#method.parent' class='fnname'>parent</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Last child of the next depth.</p>
+</div><h4 id='method.prev_sibling' class='method'><code>fn <a href='#method.prev_sibling' class='fnname'>prev_sibling</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Previous object below the same parent.</p>
+</div><h4 id='method.next_sibling' class='method'><code>fn <a href='#method.next_sibling' class='fnname'>next_sibling</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a>&gt;</code></h4>
+<div class='docblock'><p>Next object below the same parent.</p>
+</div><h4 id='method.cpuset' class='method'><code>fn <a href='#method.cpuset' class='fnname'>cpuset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.CpuSet.html' title='hwloc::CpuSet'>CpuSet</a>&gt;</code></h4>
+<div class='docblock'><p>CPUs covered by this object.</p>
+
+<p>This is the set of CPUs for which there are PU objects in the
+topology under this object, i.e. which are known to be physically
+contained in this object and known how (the children path between this
+object and the PU objects).</p>
+</div><h4 id='method.complete_cpuset' class='method'><code>fn <a href='#method.complete_cpuset' class='fnname'>complete_cpuset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.CpuSet.html' title='hwloc::CpuSet'>CpuSet</a>&gt;</code></h4>
+<div class='docblock'><p>The complete CPU set of logical processors of this object.</p>
+
+<p>This includes not only the same as the cpuset field, but also the
+CPUs for which topology information is unknown or incomplete, and the
+CPUs that are ignored when the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is
+not set. Thus no corresponding PU object may be found in the topology,
+because the precise position is undefined. It is however known that it
+would be somewhere under this object.</p>
+</div><h4 id='method.online_cpuset' class='method'><code>fn <a href='#method.online_cpuset' class='fnname'>online_cpuset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.CpuSet.html' title='hwloc::CpuSet'>CpuSet</a>&gt;</code></h4>
+<div class='docblock'><p>The CPU set of online logical processors.</p>
+
+<p>This includes the CPUs contained in this object that are online,
+i.e. draw power and can execute threads. It may however not be allowed
+to bind to them due to administration rules, see allowed_cpuset.</p>
+</div><h4 id='method.allowed_cpuset' class='method'><code>fn <a href='#method.allowed_cpuset' class='fnname'>allowed_cpuset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.CpuSet.html' title='hwloc::CpuSet'>CpuSet</a>&gt;</code></h4>
+<div class='docblock'><p>The CPU set of allowed logical processors.</p>
+
+<p>This includes the CPUs contained in this object which are allowed for
+binding, i.e. passing them to the hwloc binding functions should not
+return permission errors. This is usually restricted by administration
+rules. Some of them may however be offline so binding to them may still
+not be possible, see online_cpuset.</p>
+</div><h4 id='method.nodeset' class='method'><code>fn <a href='#method.nodeset' class='fnname'>nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
+<div class='docblock'><p>NUMA nodes covered by this object or containing this object.</p>
+
+<p>This is the set of NUMA nodes for which there are NODE objects in the topology under or
+containing it and known how (the children path between this object and the NODE objects).</p>
+
+<p>In the end, these nodes are those that are close to the current object.
+If the HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM configuration flag is set, some of these nodes may
+not be allowed for allocation, see allowed_nodeset.</p>
+
+<p>If there are no NUMA nodes in the machine, all the memory is close to this object, so the
+nodeset is full.</p>
+</div><h4 id='method.complete_nodeset' class='method'><code>fn <a href='#method.complete_nodeset' class='fnname'>complete_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
+<div class='docblock'><p>The complete NUMA node set of this object,.</p>
+
+<p>This includes not only the same as the nodeset field, but also the NUMA nodes for which
+topology information is unknown or incomplete, and the nodes that are ignored when the
+HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM flag is not set. Thus no corresponding NODE object may
+be found in the topology, because the precise position is undefined. It is however known
+that it would be somewhere under this object.</p>
+
+<p>If there are no NUMA nodes in the machine, all the memory is close to this object, so
+complete_nodeset is full.</p>
+</div><h4 id='method.allowed_nodeset' class='method'><code>fn <a href='#method.allowed_nodeset' class='fnname'>allowed_nodeset</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../hwloc/type.NodeSet.html' title='hwloc::NodeSet'>NodeSet</a>&gt;</code></h4>
+<div class='docblock'><p>The set of allowed NUMA memory nodes.</p>
+
+<p>This includes the NUMA memory nodes contained in this object which are allowed for memory
+allocation, i.e. passing them to NUMA node-directed memory allocation should not return
+permission errors. This is usually restricted by administration rules.</p>
+
+<p>If there are no NUMA nodes in the machine, all the memory is close to this object, so
+allowed_nodeset is full.</p>
+</div><h4 id='method.cache_attributes' class='method'><code>fn <a href='#method.cache_attributes' class='fnname'>cache_attributes</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;TopologyObjectCacheAttributes&gt;</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='struct' href='../hwloc/struct.TopologyObject.html' title='hwloc::TopologyObject'>TopologyObject</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "hwloc";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

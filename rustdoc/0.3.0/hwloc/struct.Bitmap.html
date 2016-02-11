@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Bitmap` struct in crate `hwloc`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Bitmap">
+
+    <title>hwloc::Bitmap - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>hwloc</a></p><script>window.sidebarCurrent = {name: 'Bitmap', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>hwloc</a>::<wbr><a class='struct' href=''>Bitmap</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-496' class='srclink' href='../src/hwloc/bitmap.rs.html#20-23' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Bitmap {
+    // some fields omitted
+}</pre><div class='docblock'><p>A generic bitmap, understood by hwloc.</p>
+
+<p>The <code>Bitmap</code> represents a set of objects, typically OS processors – which may actually be
+hardware threads (represented by <code>CpuSet</code>, which is a type alias for <code>Bitmap</code> – or memory
+nodes (represented by <code>NodeSet</code>, which is also a typedef for <code>Bitmap</code>).</p>
+
+<p>Both <code>CpuSet</code> and <code>NodeSet</code> are always indexed by OS physical number.</p>
+
+<p>A <code>Bitmap</code> may be of infinite size.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<div class='docblock'><p>Creates an empty <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());</pre>
+</div><h4 id='method.full' class='method'><code>fn <a href='#method.full' class='fnname'>full</a>() -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<div class='docblock'><p>Creates a full <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>full</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;0-&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());</pre>
+</div><h4 id='method.from' class='method'><code>fn <a href='#method.from' class='fnname'>from</a>(id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<div class='docblock'><p>Creates a new HwlocBitmap (either CpuSet or NodeSet) and sets one index right away.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from</span>(<span class='number'>1</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;1&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());</pre>
+</div><h4 id='method.from_range' class='method'><code>fn <a href='#method.from_range' class='fnname'>from_range</a>(begin: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, end: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<div class='docblock'><p>Creates a new <code>Bitmap</code> with the given range.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>0</span>, <span class='number'>5</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;0-5&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.from_raw' class='method'><code>fn <a href='#method.from_raw' class='fnname'>from_raw</a>(bitmap: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut IntHwlocBitmap</a>, manage: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<div class='docblock'><p>Wraps the given hwloc bitmap pointer into its <code>Bitmap</code> representation.</p>
+
+<p>This function is not meant to be used directly, it rather serves as the
+conversion factory when dealing with hwloc-internal structures.</p>
+</div><h4 id='method.as_ptr' class='method'><code>fn <a href='#method.as_ptr' class='fnname'>as_ptr</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const IntHwlocBitmap</a></code></h4>
+<div class='docblock'><p>Returns the containted hwloc bitmap pointer for interaction with hwloc.</p>
+</div><h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;mut self, id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</code></h4>
+<div class='docblock'><p>Set index <code>id</code> in this <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='ident'>bitmap</span>.<span class='ident'>set</span>(<span class='number'>4</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;4&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.set_range' class='method'><code>fn <a href='#method.set_range' class='fnname'>set_range</a>(&amp;mut self, begin: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, end: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<div class='docblock'><p>Add indexes from <code>begin</code> to <code>end</code> in this <code>Bitmap</code>.</p>
+
+<p>If end is -1, the range is infinite.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='ident'>bitmap</span>.<span class='ident'>set_range</span>(<span class='number'>3</span>, <span class='number'>5</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;3-5&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+
+<span class='ident'>bitmap</span>.<span class='ident'>set_range</span>(<span class='number'>2</span>, <span class='op'>-</span><span class='number'>1</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;2-&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.unset' class='method'><code>fn <a href='#method.unset' class='fnname'>unset</a>(&amp;mut self, id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</code></h4>
+<div class='docblock'><p>Remove index <code>id</code> from the <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>1</span>,<span class='number'>3</span>);
+<span class='ident'>bitmap</span>.<span class='ident'>unset</span>(<span class='number'>1</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;2-3&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.unset_range' class='method'><code>fn <a href='#method.unset_range' class='fnname'>unset_range</a>(&amp;mut self, begin: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, end: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<div class='docblock'><p>Remove indexes from <code>begin</code> to <code>end</code> in this <code>Bitmap</code>.</p>
+
+<p>If end is -1, the range is infinite.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>1</span>,<span class='number'>5</span>);
+<span class='ident'>bitmap</span>.<span class='ident'>unset_range</span>(<span class='number'>4</span>,<span class='number'>6</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;1-3&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+
+<span class='ident'>bitmap</span>.<span class='ident'>unset_range</span>(<span class='number'>2</span>,<span class='op'>-</span><span class='number'>1</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;1&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.weight' class='method'><code>fn <a href='#method.weight' class='fnname'>weight</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+<div class='docblock'><p>The number of indexes that are in the bitmap.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>1</span>,<span class='number'>5</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>5</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+<span class='ident'>bitmap</span>.<span class='ident'>unset</span>(<span class='number'>3</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());</pre>
+</div><h4 id='method.clear' class='method'><code>fn <a href='#method.clear' class='fnname'>clear</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Clears the <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>1</span>,<span class='number'>5</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>5</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());
+
+<span class='ident'>bitmap</span>.<span class='ident'>clear</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());</pre>
+</div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Checks if this <code>Bitmap</code> has indexes set.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());
+
+<span class='ident'>bitmap</span>.<span class='ident'>set</span>(<span class='number'>3</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());
+
+<span class='ident'>bitmap</span>.<span class='ident'>clear</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_empty</span>());</pre>
+</div><h4 id='method.is_set' class='method'><code>fn <a href='#method.is_set' class='fnname'>is_set</a>(&amp;self, id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Check if the field with the given id is set.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_set</span>(<span class='number'>2</span>));
+
+<span class='ident'>bitmap</span>.<span class='ident'>set</span>(<span class='number'>2</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>bitmap</span>.<span class='ident'>is_set</span>(<span class='number'>2</span>));</pre>
+</div><h4 id='method.singlify' class='method'><code>fn <a href='#method.singlify' class='fnname'>singlify</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Keep a single index among those set in the bitmap.</p>
+
+<p>May be useful before binding so that the process does not have a
+chance of migrating between multiple logical CPUs in the original mask.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='ident'>bitmap</span>.<span class='ident'>set_range</span>(<span class='number'>0</span>, <span class='number'>127</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>128</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+
+<span class='ident'>bitmap</span>.<span class='ident'>invert</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>-</span><span class='number'>1</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+
+<span class='ident'>bitmap</span>.<span class='ident'>singlify</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>1</span>, <span class='ident'>bitmap</span>.<span class='ident'>weight</span>());
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>128</span>, <span class='ident'>bitmap</span>.<span class='ident'>first</span>());
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>128</span>, <span class='ident'>bitmap</span>.<span class='ident'>last</span>());</pre>
+</div><h4 id='method.invert' class='method'><code>fn <a href='#method.invert' class='fnname'>invert</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Inverts the current <code>Bitmap</code>.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='ident'>bitmap</span>.<span class='ident'>set</span>(<span class='number'>3</span>);
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;3&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>bitmap</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;0-2,4-&quot;</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='op'>!</span><span class='ident'>bitmap</span>));</pre>
+</div><h4 id='method.first' class='method'><code>fn <a href='#method.first' class='fnname'>first</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+<div class='docblock'><p>Compute the first index (least significant bit) in this <code>Bitmap</code>.</p>
+
+<p>Returns -1 if no index is set.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>4</span>,<span class='number'>10</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>bitmap</span>.<span class='ident'>first</span>());</pre>
+</div><h4 id='method.last' class='method'><code>fn <a href='#method.last' class='fnname'>last</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+<div class='docblock'><p>Compute the last index (most significant bit) in this <code>Bitmap</code>.</p>
+
+<p>Returns -1 if no index is bitmap, or if the index bitmap is infinite.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>from_range</span>(<span class='number'>4</span>,<span class='number'>10</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>10</span>, <span class='ident'>bitmap</span>.<span class='ident'>last</span>());</pre>
+</div><h4 id='method.is_full' class='method'><code>fn <a href='#method.is_full' class='fnname'>is_full</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Test whether this <code>Bitmap</code> is completely full.</p>
+
+<p>Examples:</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>hwloc</span>::<span class='ident'>Bitmap</span>;
+
+<span class='kw'>let</span> <span class='ident'>empty_bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>false</span>, <span class='ident'>empty_bitmap</span>.<span class='ident'>is_full</span>());
+
+<span class='kw'>let</span> <span class='ident'>full_bitmap</span> <span class='op'>=</span> <span class='ident'>Bitmap</span>::<span class='ident'>full</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='boolval'>true</span>, <span class='ident'>full_bitmap</span>.<span class='ident'>is_full</span>());</pre>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<h4 id='method.not' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html#method.not' class='fnname'>not</a>(self) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.fmt-1' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, other: &amp;Self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIterator</a> for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='assoc_type.Item' class='type'><code>type Item = <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<h4 id='assoc_type.IntoIter' class='type'><code>type IntoIter = BitmapIntoIterator</code></h4>
+<h4 id='method.into_iter' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html#method.into_iter' class='fnname'>into_iter</a>(self) -&gt; Self::<a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIter</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.FromIterator.html' title='core::iter::FromIterator'>FromIterator</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt; for <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h3><div class='impl-items'><h4 id='method.from_iter' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/iter/trait.FromIterator.html#method.from_iter' class='fnname'>from_iter</a>&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;&gt;(iter: I) -&gt; <a class='struct' href='../hwloc/struct.Bitmap.html' title='hwloc::Bitmap'>Bitmap</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "hwloc";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

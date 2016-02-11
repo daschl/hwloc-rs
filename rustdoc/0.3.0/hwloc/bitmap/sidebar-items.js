@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Bitmap","A generic bitmap, understood by hwloc."]],"type":[["CpuSet","A `CpuSet` is a `Bitmap` whose bits are set according to CPU physical OS indexes."],["NodeSet","A `NodeSet` is a `Bitmap` whose bits are set according to NUMA memory node physical OS indexes."]]});
