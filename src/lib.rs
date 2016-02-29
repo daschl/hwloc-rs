@@ -564,7 +564,7 @@ bitflags! {
     /// - **CPUBIND_THREAD:** Bind current thread of current process.
     /// - **CPUBIND_STRICT:** Request for strict binding from the OS.
     /// - **CPUBIND_NO_MEMBIND:** Avoid any effect on memory binding.
-    flags CpuBindFlags: i32 {
+    pub flags CpuBindFlags: i32 {
         /// Bind all threads of the current (possibly) multithreaded process.
         const CPUBIND_PROCESS = (1<<0),
         /// Bind current thread of current process.
@@ -577,7 +577,7 @@ bitflags! {
 }
 
 bitflags! {
-    flags MemBindPolicy: i32 {
+    pub flags MemBindPolicy: i32 {
         /// Reset the memory allocation policy to the system default. Depending on the operating
         /// system, this may correspond to MEMBIND_FIRSTTOUCH (Linux), or MEMBIND_BIND (AIX,
         /// HP-UX, OSF, Solaris, Windows).
