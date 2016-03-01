@@ -15,8 +15,11 @@ readme = "README.md"
 [dependencies]
 libc = "0.2.7"
 errno = "0.1.6"
-num = "0.1.31"
 bitflags = "0.5.0"
+
+[dependencies.num]
+version = "0.1.13"
+default-features = false
 
 [build-dependencies]
 pkg-config = "0.3.6"
