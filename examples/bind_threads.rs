@@ -1,5 +1,7 @@
 extern crate hwloc;
 extern crate libc;
+#[cfg(target_os = "windows")] extern crate kernel32;
+#[cfg(target_os = "windows")] extern crate winapi;
 
 use hwloc::{Topology, ObjectType, CPUBIND_THREAD, CpuSet};
 use std::thread;
@@ -66,6 +68,12 @@ fn cpuset_for_core(topology: &Topology, idx: usize) -> CpuSet {
 
 /// Helper method to get the thread id through libc, with current rust stable (1.5.0) its not
 /// possible otherwise I think.
+#[cfg(any(target_os="macos",target_os="linux"))]
 fn get_thread_id() -> libc::pthread_t {
     unsafe { libc::pthread_self() }
+}
+
+#[cfg(target_os = "windows")]
+fn get_thread_id() -> winapi::winnt::HANDLE {
+    unsafe { kernel32::GetCurrentThread() }
 }

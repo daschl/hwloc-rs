@@ -83,6 +83,7 @@ extern crate bitflags;
 extern crate errno;
 extern crate libc;
 extern crate num;
+#[cfg(target_os = "windows")]   extern crate winapi;
 
 mod ffi;
 mod topology_object;
@@ -97,12 +98,16 @@ pub use topology_object::{TopologyObject, TopologyObjectMemory};
 
 use num::{ToPrimitive, FromPrimitive};
 use errno::errno;
-use libc::{pthread_t, pid_t};
 
 pub struct Topology {
     topo: *mut ffi::HwlocTopology,
     support: *const TopologySupport,
 }
+
+#[allow(non_camel_case_types)] #[cfg(target_os = "windows")]                    pub type pthread_t  = winapi::winnt::HANDLE;
+#[allow(non_camel_case_types)] #[cfg(target_os = "windows")]                    pub type pid_t      = winapi::minwindef::DWORD;
+#[allow(non_camel_case_types)] #[cfg(any(target_os="macos",target_os="linux"))] pub type pthread_t  = libc::pthread_t;
+#[allow(non_camel_case_types)] #[cfg(any(target_os="macos",target_os="linux"))] pub type pid_t      = libc::pid_t;
 
 unsafe impl Send for Topology {}
 unsafe impl Sync for Topology {}
