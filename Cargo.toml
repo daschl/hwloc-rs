@@ -1,6 +1,6 @@
 [package]
 name = "hwloc"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Michael Nitschinger <michael@nitschinger.at>"]
 license = "MIT"
 keywords = ["hwloc"]
@@ -25,5 +25,5 @@ default-features = false
 pkg-config = "0.3.6"
 
 [target.'cfg(windows)'.dependencies]
-kernel32-sys = "0.2.2"
+kernel32-sys = "0.2.1"
 winapi = "0.2"
