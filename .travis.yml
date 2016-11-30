@@ -3,7 +3,7 @@ rust:
   - stable
   - beta
   - nightly
-sudo: false
+sudo: required
 os:
   - osx
   - linux
@@ -21,7 +21,8 @@ addons:
     packages:
       - hwloc
       - libhwloc-dev
+      - ca-certificates
 install:
-  - wget http://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.1.tar.gz
-  - tar -xzvf hwloc-1.11.1.tar.gz
-  - cd hwloc-1.11.1  && ./configure && make && sudo make install
+  - wget --no-check-certificate https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.5.tar.gz
+  - tar -xzvf hwloc-1.11.5.tar.gz
+  - cd hwloc-1.11.5  && ./configure && make && sudo make install
