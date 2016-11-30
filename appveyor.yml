@@ -2,7 +2,7 @@ environment:
   RUST_TEST_THREADS: 1
   matrix:
   - TARGET: x86_64-pc-windows-msvc
-    RUST_CHANNEL: 1.11.0
+    RUST_CHANNEL: 1.13.0
     VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\bin\\amd64\\vcvars64.bat"
   - TARGET: x86_64-pc-windows-msvc
     RUST_CHANNEL: beta
@@ -14,13 +14,14 @@ install:
   - ps: mkdir C:/dl
   - curl -o "C:/dl/hwloc-win64-build-1.11.5.zip" "https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-win64-build-1.11.5.zip"
   - ps: Add-Type -AssemblyName system.io.compression.filesystem
-  - ps: "[io.compression.zipfile]::ExtractToDirectory(\"C:/dl/hwloc-win64-build-1.11.5.zip\", \"C:/dl/hwloc-win64-build-1.11.5\")"
-  - ps: $env:Path += ";C:\dl\hwloc-win64-build-1.11.5\bin"
-  - ps: $env:Lib += ";C:\dl\hwloc-win64-build-1.11.5\lib"
+  - ps: "[io.compression.zipfile]::ExtractToDirectory(\"C:/dl/hwloc-win64-build-1.11.5.zip\", \"C:/dl\")"
   - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-${env:RUST_CHANNEL}-${env:TARGET}.exe"
   - rust-%RUST_CHANNEL%-%TARGET%.exe /VERYSILENT /NORESTART /DIR="C:\Program Files (x86)\Rust"
   - CALL "%VCVARS%"
+  - SET PATH=%PATH%;C:\dl\hwloc-win64-build-1.11.5\bin
+  - SET LIB=%LIB%;C:\dl\hwloc-win64-build-1.11.5\lib
   - SET PATH=%PATH%;C:\Program Files (x86)\Rust\bin
+  - SET LIB=%LIB%;C:\Program Files (x86)\Rust\lib
   - rustc -V
   - cargo -V
 build: false
