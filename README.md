@@ -28,8 +28,7 @@ Here is a table of the version compatibility that we try to test for:
 ### Install hwloc on OS X
 The easiest way is to download, build and install the sources from the website.
 
- 1. [Download](https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.5.tar.gz)
-    the artifact.
+ 1. [Download](https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.5.tar.gz) the artifact.
  2. `tar -xvzpf hwloc-1.11.5.tar.gz`
  3. `cd hwloc-1.11.5`
  4. `./configure && make && sudo make install`
@@ -79,13 +78,22 @@ Machine (490MB)
       Block L#2 "sda"
 ```
 
+### Install hwloc on Windows (Windows 10)
+
+ 1. Download and extract the [64bit](https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-win64-build-1.11.5.zip) binaries.
+ 2. Add the `/bin` folder to your `PATH` environment variable.
+ 3. Add the `/lib` folder to your `LIB` environment variable.
+
+After restarting your shell you should be able to start `lstopo`.
+
+
 ## Usage
 
 First, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-hwloc = "0.3.0"
+hwloc = "0.4.0"
 ```
 
 Next, add this to your crate root:
