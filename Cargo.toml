@@ -13,17 +13,17 @@ links = "hwloc"
 readme = "README.md"
 
 [dependencies]
-libc = "0.2.7"
-errno = "0.1.6"
-bitflags = "0.5.0"
+libc = "0.2"
+errno = "0.2"
+bitflags = "0.7"
 
 [dependencies.num]
-version = "0.1.13"
+version = "0.1"
 default-features = false
 
 [build-dependencies]
 pkg-config = "0.3.6"
 
 [target.'cfg(windows)'.dependencies]
-kernel32-sys = "0.2.1"
+kernel32-sys = "0.2"
 winapi = "0.2"
