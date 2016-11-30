@@ -23,3 +23,7 @@ default-features = false
 
 [build-dependencies]
 pkg-config = "0.3.6"
+
+[target.'cfg(windows)'.dependencies]
+kernel32-sys = "0.2.2"
+winapi = "0.2"
