@@ -17,19 +17,21 @@ easiest way is to install it system-wide.
 
 Here is a table of the version compatibility that we try to test for:
 
-| hwloc-rs | hwloc  |
-|----------|--------|
-| 0.1      | 1.11.1 |
-| 0.2      | 1.11.1 |
-| 0.3      | 1.11.2 |
+| hwloc-rs | libhwloc  |
+|----------|-----------|
+| 0.4      | 1.11.5    |
+| 0.3      | 1.11.2    |
+| 0.2      | 1.11.1    |
+| 0.1      | 1.11.1    |
+
 
 ### Install hwloc on OS X
 The easiest way is to download, build and install the sources from the website.
 
- 1. [Download](https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.2.tar.gz)
+ 1. [Download](https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.5.tar.gz)
     the artifact.
- 2. `tar -xvzpf hwloc-1.11.2.tar.gz`
- 3. `cd hwloc-1.11.2`
+ 2. `tar -xvzpf hwloc-1.11.5.tar.gz`
+ 3. `cd hwloc-1.11.5`
  4. `./configure && make && sudo make install`
 
 You can check if it works by trying the `lstopo` command. Here is the sample
