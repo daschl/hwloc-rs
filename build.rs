@@ -1,12 +1,5 @@
 extern crate pkg_config;
 
 fn main() {
-
-	if let Ok(lib) = pkg_config::find_library("hwloc") {
-		for path in &lib.include_paths {
-			println!("cargo:include={}", path.display());
-		}		
-		return
-	}
-
+    pkg_config::Config::new().atleast_version("1.11.0").probe("hwloc").unwrap();
 }

@@ -227,13 +227,7 @@ impl TopologyObject {
     }
 
     fn deref_topology(&self, p: &*mut TopologyObject) -> Option<&TopologyObject> {
-        unsafe {
-            if p.is_null() {
-                None
-            } else {
-                Some(&**p)
-            }
-        }
+        unsafe { if p.is_null() { None } else { Some(&**p) } }
     }
 
     fn deref_cpuset(&self, p: *mut IntHwlocBitmap) -> Option<CpuSet> {
@@ -368,23 +362,23 @@ struct TopologyObjectAttributes {
 
 impl TopologyObjectAttributes {
     pub unsafe fn cache(&mut self) -> *mut TopologyObjectCacheAttributes {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+        let raw: *mut u8 = &self._bindgen_data_ as *const [u64; 5] as *mut u8;
         ::std::mem::transmute(raw.offset(0))
     }
     pub unsafe fn group(&mut self) -> *mut TopologyObjectGroupAttributes {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+        let raw: *mut u8 = &self._bindgen_data_ as *const [u64; 5] as *mut u8;
         ::std::mem::transmute(raw.offset(0))
     }
     pub unsafe fn pcidev(&mut self) -> *mut TopologyObjectPCIDevAttributes {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+        let raw: *mut u8 = &self._bindgen_data_ as *const [u64; 5] as *mut u8;
         ::std::mem::transmute(raw.offset(0))
     }
     pub unsafe fn bridge(&mut self) -> *mut TopologyObjectBridgeAttributes {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+        let raw: *mut u8 = &self._bindgen_data_ as *const [u64; 5] as *mut u8;
         ::std::mem::transmute(raw.offset(0))
     }
     pub unsafe fn osdev(&mut self) -> *mut TopologyObjectOSDevAttributes {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+        let raw: *mut u8 = &self._bindgen_data_ as *const [u64; 5] as *mut u8;
         ::std::mem::transmute(raw.offset(0))
     }
 }

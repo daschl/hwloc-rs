@@ -238,11 +238,7 @@ impl Bitmap {
     /// ```
     pub fn is_empty(&self) -> bool {
         let result = unsafe { ffi::hwloc_bitmap_iszero(self.bitmap) };
-        if result == 0 {
-            false
-        } else {
-            true
-        }
+        !(result == 0)
     }
 
     /// Check if the field with the given id is set.
@@ -260,11 +256,7 @@ impl Bitmap {
     /// ```
     pub fn is_set(&self, id: u32) -> bool {
         let result = unsafe { ffi::hwloc_bitmap_isset(self.bitmap, id) };
-        if result == 0 {
-            false
-        } else {
-            true
-        }
+        !(result == 0)
     }
 
     /// Keep a single index among those set in the bitmap.
@@ -456,6 +448,12 @@ impl FromIterator<u32> for Bitmap {
             bitmap.set(i);
         }
         bitmap
+    }
+}
+
+impl Default for Bitmap {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

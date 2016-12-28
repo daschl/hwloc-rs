@@ -83,7 +83,8 @@ extern crate bitflags;
 extern crate errno;
 extern crate libc;
 extern crate num;
-#[cfg(target_os = "windows")]   extern crate winapi;
+#[cfg(target_os = "windows")]
+extern crate winapi;
 
 mod ffi;
 mod topology_object;
@@ -104,10 +105,18 @@ pub struct Topology {
     support: *const TopologySupport,
 }
 
-#[allow(non_camel_case_types)] #[cfg(target_os = "windows")]                    pub type pthread_t  = winapi::winnt::HANDLE;
-#[allow(non_camel_case_types)] #[cfg(target_os = "windows")]                    pub type pid_t      = winapi::minwindef::DWORD;
-#[allow(non_camel_case_types)] #[cfg(any(target_os="macos",target_os="linux"))] pub type pthread_t  = libc::pthread_t;
-#[allow(non_camel_case_types)] #[cfg(any(target_os="macos",target_os="linux"))] pub type pid_t      = libc::pid_t;
+#[allow(non_camel_case_types)]
+#[cfg(target_os = "windows")]
+pub type pthread_t = winapi::winnt::HANDLE;
+#[allow(non_camel_case_types)]
+#[cfg(target_os = "windows")]
+pub type pid_t = winapi::minwindef::DWORD;
+#[allow(non_camel_case_types)]
+#[cfg(any(target_os="macos",target_os="linux"))]
+pub type pthread_t = libc::pthread_t;
+#[allow(non_camel_case_types)]
+#[cfg(any(target_os="macos",target_os="linux"))]
+pub type pid_t = libc::pid_t;
 
 unsafe impl Send for Topology {}
 unsafe impl Sync for Topology {}
@@ -165,8 +174,8 @@ impl Topology {
         let mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
 
         let final_flag = flags.iter()
-                              .map(|f| f.to_u64().unwrap())
-                              .fold(0, |out, current| out | current);
+            .map(|f| f.to_u64().unwrap())
+            .fold(0, |out, current| out | current);
 
         unsafe {
             ffi::hwloc_topology_init(&mut topo);
@@ -264,7 +273,7 @@ impl Topology {
             -3 => Err(TypeDepthError::TypeDepthBridge),
             -4 => Err(TypeDepthError::TypeDepthPCIDevice),
             -5 => Err(TypeDepthError::TypeDepthOSDevice),
-            _ => Err(TypeDepthError::UnkownTypeDepthError),
+            _ => Err(TypeDepthError::Unkown),
         }
     }
 
@@ -443,13 +452,12 @@ impl Topology {
 
     /// Binds a process (identified by its `pid`) on CPUs identified by the given `CpuSet`.
     pub fn set_cpubind_for_process(&mut self,
-                                  pid: pid_t,
-                                  set: CpuSet,
-                                  flags: CpuBindFlags)
-                                  -> Result<(), CpuBindError> {
-        let result = unsafe {
-            ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits())
-        };
+                                   pid: pid_t,
+                                   set: CpuSet,
+                                   flags: CpuBindFlags)
+                                   -> Result<(), CpuBindError> {
+        let result =
+            unsafe { ffi::hwloc_set_proc_cpubind(self.topo, pid, set.as_ptr(), flags.bits()) };
 
         match result {
             r if r < 0 => {
@@ -473,13 +481,12 @@ impl Topology {
 
     /// Bind a thread (by its `tid`) on CPUs given in through the `CpuSet`.
     pub fn set_cpubind_for_thread(&mut self,
-                                     tid: pthread_t,
-                                     set: CpuSet,
-                                     flags: CpuBindFlags)
-                                     -> Result<(), CpuBindError> {
-        let result = unsafe {
-            ffi::hwloc_set_thread_cpubind(self.topo, tid, set.as_ptr(), flags.bits())
-        };
+                                  tid: pthread_t,
+                                  set: CpuSet,
+                                  flags: CpuBindFlags)
+                                  -> Result<(), CpuBindError> {
+        let result =
+            unsafe { ffi::hwloc_set_thread_cpubind(self.topo, tid, set.as_ptr(), flags.bits()) };
 
         match result {
             r if r < 0 => {
@@ -530,9 +537,8 @@ impl Topology {
     /// already outdated.
     pub fn get_cpu_location_for_process(&self, pid: pid_t, flags: CpuBindFlags) -> Option<CpuSet> {
         let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
-        let res = unsafe {
-            ffi::hwloc_get_proc_last_cpu_location(self.topo, pid, raw_set, flags.bits())
-        };
+        let res =
+            unsafe { ffi::hwloc_get_proc_last_cpu_location(self.topo, pid, raw_set, flags.bits()) };
         if res >= 0 {
             Some(CpuSet::from_raw(raw_set, true))
         } else {
@@ -544,6 +550,12 @@ impl Topology {
 impl Drop for Topology {
     fn drop(&mut self) {
         unsafe { ffi::hwloc_topology_destroy(self.topo) }
+    }
+}
+
+impl Default for Topology {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

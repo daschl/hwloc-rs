@@ -118,7 +118,7 @@ pub enum TypeDepthError {
     /// Virtual depth for software device object level.
     TypeDepthOSDevice = -5,
     /// HWLOC returned a depth error which is not known to the rust binding.
-    UnkownTypeDepthError = -99,
+    Unkown = -99,
 }
 
 const TOPOLOGY_FLAG_WHOLE_SYSTEM: i64 = 1;
