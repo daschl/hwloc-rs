@@ -1,5 +1,4 @@
-use libc::{c_int, c_uint, c_ulonglong, c_char};
-use {pid_t, pthread_t};
+use libc::{c_int, c_uint, c_ulonglong, c_char, pid_t, pthread_t};
 use num::{ToPrimitive, FromPrimitive};
 use topology_object::TopologyObject;
 use bitmap::IntHwlocBitmap;
@@ -288,7 +287,7 @@ extern "C" {
     pub fn hwloc_compare_types(type1: ObjectType, type2: ObjectType) -> c_int;
 }
 
-#[cfg(any(target_os="macos",target_os="linux"))]
+#[cfg(not(target_os = "windows"))]
 #[link(name = "hwloc")]
 extern "C" {
 
