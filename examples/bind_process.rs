@@ -24,21 +24,26 @@ fn main() {
     cpuset.singlify();
 
     println!("Before Bind: {:?}",
-             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 
-    // Last CPU Location for this PID
-    println!("Last Known CPU Location: {:?}",
-             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap());
+    // Last CPU Location for this PID (not implemented on all systems)
+    if let Some(l) = topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS) {
+        println!("Last Known CPU Location: {:?}", l);
+    }
 
     // Bind to one core.
-    topo.set_cpubind_for_process(pid, cpuset, CPUBIND_PROCESS).unwrap();
+    topo.set_cpubind_for_process(pid, cpuset, CPUBIND_PROCESS)
+        .unwrap();
 
     println!("After Bind: {:?}",
-             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 
-    // Last CPU Location for this PID
-    println!("Last Known CPU Location: {:?}",
-             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap());
+    // Last CPU Location for this PID (not implemented on all systems)
+    if let Some(l) = topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS) {
+        println!("Last Known CPU Location: {:?}", l);
+    }
 }
 
 /// Find the last core
@@ -53,7 +58,7 @@ fn get_pid() -> winapi::minwindef::DWORD {
     unsafe { kernel32::GetCurrentProcessId() }
 }
 
-#[cfg(any(target_os="macos",target_os="linux"))]
+#[cfg(not(target_os = "windows"))]
 fn get_pid() -> libc::pid_t {
     unsafe { libc::getpid() }
 }
