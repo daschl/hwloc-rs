@@ -13,7 +13,7 @@ fn main() {
     let mut topo = Topology::new();
 
     // load the current pid through libc
-    let pid = get_pid();
+    let pid = unsafe { libc::getpid() };
 
     println!("Binding Process with PID {:?}", pid);
 
@@ -24,21 +24,26 @@ fn main() {
     cpuset.singlify();
 
     println!("Before Bind: {:?}",
-             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 
     // Last CPU Location for this PID
     println!("Last Known CPU Location: {:?}",
-             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 
     // Bind to one core.
-    topo.set_cpubind_for_process(pid, cpuset, CPUBIND_PROCESS).unwrap();
+    topo.set_cpubind_for_process(pid, cpuset, CPUBIND_PROCESS)
+        .unwrap();
 
     println!("After Bind: {:?}",
-             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpubind_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 
     // Last CPU Location for this PID
     println!("Last Known CPU Location: {:?}",
-             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS).unwrap());
+             topo.get_cpu_location_for_process(pid, CPUBIND_PROCESS)
+                 .unwrap());
 }
 
 /// Find the last core

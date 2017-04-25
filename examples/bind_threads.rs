@@ -26,7 +26,10 @@ fn main() {
     let num_cores = {
         let topo_rc = topo.clone();
         let topo_locked = topo_rc.lock().unwrap();
-        (*topo_locked).objects_with_type(&ObjectType::Core).unwrap().len()
+        (*topo_locked)
+            .objects_with_type(&ObjectType::Core)
+            .unwrap()
+            .len()
     };
     println!("Found {} cores.", num_cores);
 
@@ -36,7 +39,8 @@ fn main() {
             let child_topo = topo.clone();
             thread::spawn(move || {
                 // Get the current thread id and lock the topology to use.
-                let tid = get_thread_id();
+                let tid = unsafe { libc::pthread_self() as usize };
+
                 let mut locked_topo = child_topo.lock().unwrap();
 
                 // Thread binding before explicit set.
@@ -46,7 +50,9 @@ fn main() {
                 let bind_to = cpuset_for_core(&*locked_topo, i);
 
                 // Set the binding.
-                locked_topo.set_cpubind_for_thread(tid, bind_to, CPUBIND_THREAD).unwrap();
+                locked_topo
+                    .set_cpubind_for_thread(tid, bind_to, CPUBIND_THREAD)
+                    .unwrap();
 
                 // Thread binding after explicit set.
                 let after = locked_topo.get_cpubind_for_thread(tid, CPUBIND_THREAD);
