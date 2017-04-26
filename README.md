@@ -19,6 +19,7 @@ Here is a table of the version compatibility that we try to test for:
 
 | hwloc-rs | libhwloc  |
 |----------|-----------|
+| 0.5      | 1.11.5    |
 | 0.4      | 1.11.5    |
 | 0.3      | 1.11.2    |
 | 0.2      | 1.11.1    |
@@ -93,7 +94,7 @@ First, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-hwloc = "0.4.0"
+hwloc = "0.5.0"
 ```
 
 Next, add this to your crate root:
