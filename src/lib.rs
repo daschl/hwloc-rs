@@ -112,10 +112,10 @@ pub type pthread_t = winapi::winnt::HANDLE;
 #[cfg(target_os = "windows")]
 pub type pid_t = winapi::minwindef::DWORD;
 #[allow(non_camel_case_types)]
-#[cfg(any(target_os="macos",target_os="linux"))]
+#[cfg(not(target_os = "windows"))]
 pub type pthread_t = libc::pthread_t;
 #[allow(non_camel_case_types)]
-#[cfg(any(target_os="macos",target_os="linux"))]
+#[cfg(not(target_os = "windows"))]
 pub type pid_t = libc::pid_t;
 
 unsafe impl Send for Topology {}
@@ -173,7 +173,8 @@ impl Topology {
     pub fn with_flags(flags: Vec<TopologyFlag>) -> Topology {
         let mut topo: *mut ffi::HwlocTopology = std::ptr::null_mut();
 
-        let final_flag = flags.iter()
+        let final_flag = flags
+            .iter()
             .map(|f| f.to_u64().unwrap())
             .fold(0, |out, current| out | current);
 
@@ -677,6 +678,15 @@ mod tests {
     #[test]
     #[cfg(target_os="linux")]
     fn should_support_cpu_binding_on_linux() {
+        let topo = Topology::new();
+
+        assert!(topo.support().cpu().set_current_process());
+        assert!(topo.support().cpu().set_current_thread());
+    }
+
+    #[test]
+    #[cfg(target_os="freebsd")]
+    fn should_support_cpu_binding_on_freebsd() {
         let topo = Topology::new();
 
         assert!(topo.support().cpu().set_current_process());

@@ -26,7 +26,10 @@ fn main() {
     let num_cores = {
         let topo_rc = topo.clone();
         let topo_locked = topo_rc.lock().unwrap();
-        (*topo_locked).objects_with_type(&ObjectType::Core).unwrap().len()
+        (*topo_locked)
+            .objects_with_type(&ObjectType::Core)
+            .unwrap()
+            .len()
     };
     println!("Found {} cores.", num_cores);
 
@@ -43,10 +46,15 @@ fn main() {
                 let before = locked_topo.get_cpubind_for_thread(tid, CPUBIND_THREAD);
 
                 // load the cpuset for the given core index.
-                let bind_to = cpuset_for_core(&*locked_topo, i);
+                let mut bind_to = cpuset_for_core(&*locked_topo, i);
+
+                // Get only one logical processor (in case the core is SMT/hyper-threaded).
+                bind_to.singlify();
 
                 // Set the binding.
-                locked_topo.set_cpubind_for_thread(tid, bind_to, CPUBIND_THREAD).unwrap();
+                locked_topo
+                    .set_cpubind_for_thread(tid, bind_to, CPUBIND_THREAD)
+                    .unwrap();
 
                 // Thread binding after explicit set.
                 let after = locked_topo.get_cpubind_for_thread(tid, CPUBIND_THREAD);
@@ -72,7 +80,7 @@ fn cpuset_for_core(topology: &Topology, idx: usize) -> CpuSet {
 
 /// Helper method to get the thread id through libc, with current rust stable (1.5.0) its not
 /// possible otherwise I think.
-#[cfg(any(target_os="macos",target_os="linux"))]
+#[cfg(not(target_os = "windows"))]
 fn get_thread_id() -> libc::pthread_t {
     unsafe { libc::pthread_self() }
 }
