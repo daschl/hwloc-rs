@@ -259,6 +259,29 @@ impl Bitmap {
         !(result == 0)
     }
 
+    /// Check if `other` bitmap is part of this bitmap
+   ///
+   /// Examples:
+   ///
+   /// ```
+   /// use hwloc::Bitmap;
+   ///
+   /// let mut bitmap = Bitmap::new();
+   /// bitmap.set_range(0,5);
+   ///
+   /// let mut bitmap2 = Bitmap::new();
+   /// bitmap2.set(2);
+   /// let mut bitmap3 = Bitmap::new();
+   /// bitmap3.set(6);
+   ///
+   /// assert!(bitmap.is_included(&bitmap2));
+   /// assert!(!bitmap.is_included(&bitmap3));
+   /// ```
+    pub fn is_included(&self, other: &Bitmap) -> bool {
+        let result = unsafe { ffi::hwloc_bitmap_isincluded(other.bitmap, self.bitmap) };
+        !(result == 0)
+    }
+
     /// Keep a single index among those set in the bitmap.
     ///
     /// May be useful before binding so that the process does not have a
