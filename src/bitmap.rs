@@ -381,7 +381,9 @@ impl fmt::Display for Bitmap {
         let mut result: *mut c_char = ptr::null_mut();
         unsafe {
             ffi::hwloc_bitmap_list_asprintf(&mut result, self.bitmap);
-            write!(f, "{}", CStr::from_ptr(result).to_str().unwrap())
+            let res = write!(f, "{}", CStr::from_ptr(result).to_str().unwrap());
+            libc::free(result as *mut libc::c_void);
+            res
         }
     }
 }
@@ -391,7 +393,9 @@ impl fmt::Debug for Bitmap {
         let mut result: *mut c_char = ptr::null_mut();
         unsafe {
             ffi::hwloc_bitmap_list_asprintf(&mut result, self.bitmap);
-            write!(f, "{}", CStr::from_ptr(result).to_str().unwrap())
+            let res = write!(f, "{}", CStr::from_ptr(result).to_str().unwrap());
+            libc::free(result as *mut libc::c_void);
+            res
         }
     }
 }
