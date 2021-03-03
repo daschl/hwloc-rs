@@ -42,7 +42,7 @@ impl Bitmap {
     pub fn new() -> Bitmap {
         let bitmap = unsafe { ffi::hwloc_bitmap_alloc() };
         Bitmap {
-            bitmap: bitmap,
+            bitmap,
             manage: true,
         }
     }
@@ -61,7 +61,7 @@ impl Bitmap {
     pub fn full() -> Bitmap {
         let bitmap = unsafe { ffi::hwloc_bitmap_alloc_full() };
         Bitmap {
-            bitmap: bitmap,
+            bitmap,
             manage: true,
         }
     }
@@ -105,8 +105,8 @@ impl Bitmap {
     /// conversion factory when dealing with hwloc-internal structures.
     pub fn from_raw(bitmap: *mut IntHwlocBitmap, manage: bool) -> Bitmap {
         Bitmap {
-            bitmap: bitmap,
-            manage: manage,
+            bitmap,
+            manage,
         }
     }
 
@@ -238,7 +238,7 @@ impl Bitmap {
     /// ```
     pub fn is_empty(&self) -> bool {
         let result = unsafe { ffi::hwloc_bitmap_iszero(self.bitmap) };
-        !(result == 0)
+        result != 0
     }
 
     /// Check if the field with the given id is set.
@@ -256,7 +256,7 @@ impl Bitmap {
     /// ```
     pub fn is_set(&self, id: u32) -> bool {
         let result = unsafe { ffi::hwloc_bitmap_isset(self.bitmap, id) };
-        !(result == 0)
+        result != 0
     }
 
     /// Keep a single index among those set in the bitmap.
