@@ -546,6 +546,51 @@ impl Topology {
             None
         }
     }
+
+    /// Return the idx -th object at `depth` included in CPU set `set`
+    ///
+    /// Objects with empty CPU sets are ignored (otherwise they would be considered included in any
+    /// given set). This function cannot work if objects of the given type do not have CPU sets or
+    /// if the topology is made of different machines.
+    pub fn get_obj_inside_cpuset_by_depth(&self, set: CpuSet,
+                                         depth: u32,
+                                         idx: u32) -> Option<&TopologyObject> {
+        let obj = unsafe { ffi::hwloc_get_obj_by_depth(self.topo, depth, 0) };
+        if obj.is_null() {
+            return None
+        }
+        let mut obj = unsafe { &*obj };
+        let mut count = 0;
+        loop {
+            if let Some(obj_set) = obj.cpuset() {
+                if !obj_set.is_empty() && set.is_included(&obj_set) {
+                    if count == idx {
+                        return Some(obj)
+                    }
+                    count += 1;
+                }
+            }
+            if let Some(cousin) = obj.next_cousin() {
+                obj = cousin
+            } else {
+                return None
+            }
+        }
+    }
+
+    /// Return the `idx` -th object of type type included in CPU set `set`
+    ///
+    /// Objects with empty CPU sets are ignored (otherwise they would be considered included in any
+    /// given set). This function cannot work if objects of the given type do not have CPU sets or
+    /// if the topology is made of different machines.
+    pub fn get_obj_inside_cpuset_by_type(&self, object_type: &ObjectType,
+                                         set: CpuSet,
+                                         idx: u32) -> Option<&TopologyObject> {
+        match self.depth_for_type(object_type) {
+            Ok(depth) => self.get_obj_inside_cpuset_by_depth(set, depth, idx),
+            _ => None
+        }
+    }
 }
 
 impl Drop for Topology {
@@ -709,6 +754,16 @@ mod tests {
         assert_eq!("100", format!("{:b}", CPUBIND_STRICT.bits()));
         assert_eq!("101",
                    format!("{:b}", (CPUBIND_STRICT | CPUBIND_PROCESS).bits()));
+    }
+
+    #[test]
+    fn should_find_objetcs_by_cputset() {
+        let topo = Topology::new();
+        let root_obj = topo.object_at_root();
+        let root_cpuset = root_obj.cpuset().expect("No cpuset");
+
+        let _pu = topo.get_obj_inside_cpuset_by_type(&ObjectType::PU, root_cpuset, 0)
+                     .expect("Failed to find PU object in root cpu_set");
     }
 
 }

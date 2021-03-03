@@ -260,6 +260,8 @@ extern "C" {
     pub fn hwloc_bitmap_iszero(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_isset(bitmap: *const IntHwlocBitmap, id: c_uint) -> c_int;
     pub fn hwloc_bitmap_singlify(bitmap: *mut IntHwlocBitmap);
+    pub fn hwloc_bitmap_isincluded(sub_bitmap: *mut IntHwlocBitmap,
+                                   super_bitmap: *mut IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_not(result: *mut IntHwlocBitmap, bitmap: *const IntHwlocBitmap);
     pub fn hwloc_bitmap_first(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_last(bitmap: *const IntHwlocBitmap) -> c_int;
@@ -286,6 +288,7 @@ extern "C" {
                                    -> c_int;
 
     pub fn hwloc_compare_types(type1: ObjectType, type2: ObjectType) -> c_int;
+
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -375,6 +378,8 @@ extern "C" {
     pub fn hwloc_bitmap_iszero(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_isset(bitmap: *const IntHwlocBitmap, id: c_uint) -> c_int;
     pub fn hwloc_bitmap_singlify(bitmap: *mut IntHwlocBitmap);
+    pub fn hwloc_bitmap_isincluded(sub_bitmap: *mut IntHwlocBitmap,
+                                   super_bitmap: *mut IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_not(result: *mut IntHwlocBitmap, bitmap: *const IntHwlocBitmap);
     pub fn hwloc_bitmap_first(bitmap: *const IntHwlocBitmap) -> c_int;
     pub fn hwloc_bitmap_last(bitmap: *const IntHwlocBitmap) -> c_int;
