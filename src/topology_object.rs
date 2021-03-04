@@ -262,18 +262,16 @@ impl fmt::Display for TopologyObject {
 		let mut buf_attr = [0; 2048];
 
 
-        let separator = CString::new("  ").unwrap();
-        let separator_ptr = separator.into_raw();
+		let separator = b"  \0".as_ptr() as * const c_char;
 
         unsafe {
             ffi::hwloc_obj_type_snprintf(buf_type.as_mut_ptr(), buf_type.len() as c_int, &*self as *const TopologyObject, false);
             ffi::hwloc_obj_attr_snprintf(buf_attr.as_mut_ptr(),
                                          buf_attr.len() as c_int,
                                          &*self as *const TopologyObject,
-                                         separator_ptr,
+                                         separator,
                                          false);
 
-            CString::from_raw(separator_ptr);
 
             write!(f,
                    "{} ({})",
