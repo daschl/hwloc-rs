@@ -1,5 +1,5 @@
 use libc::{c_int, c_uint, c_ulonglong, c_char, c_void, c_float, c_ushort, c_uchar};
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::fmt;
 
 use ffi::ObjectType;
@@ -275,8 +275,8 @@ impl fmt::Display for TopologyObject {
 
             write!(f,
                    "{} ({})",
-                   CString::from_raw(buf_type.as_mut_ptr()).to_str().unwrap(),
-                   CString::from_raw(buf_attr.as_mut_ptr()).to_str().unwrap())
+                   CStr::from_ptr(buf_type.as_ptr()).to_str().unwrap(),
+                   CStr::from_ptr(buf_attr.as_ptr()).to_str().unwrap())
         }
     }
 }
