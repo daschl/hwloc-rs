@@ -77,6 +77,7 @@
 //! [LICENSE](https://github.com/daschl/hwloc-rs/blob/master/LICENSE) file for more
 //! information.
 
+#![allow(deprecated)]
 #![allow(dead_code)]
 #[macro_use]
 extern crate bitflags;
@@ -546,6 +547,29 @@ impl Topology {
             None
         }
     }
+
+    // Added by long 20210707 ---------------------------------------------------------
+    pub fn set_membind(&self, set: CpuSet, policy: MemBindPolicy, flags: MemBindFlags) -> Result<(), MemBindError> {
+        let result = unsafe { ffi::hwloc_set_membind(self.topo, set.as_ptr(), policy, flags.bits()) };
+        match result {
+            r if r < 0 => {
+                let e = errno();
+                Err(MemBindError::Generic(e.0 as i32, format!("{}", e)))
+            }
+            _ => Ok(()),
+        }
+    }
+
+    pub fn get_membind(&self, policy: &mut MemBindPolicy, flags: MemBindFlags) -> Option<CpuSet> {
+        let raw_set = unsafe { ffi::hwloc_bitmap_alloc() };
+        let res = unsafe { ffi::hwloc_get_membind(self.topo, raw_set, policy, flags.bits()) };
+        if res >= 0 {
+            Some(CpuSet::from_raw(raw_set, true))
+        } else {
+            None
+        }
+    }
+    // --------------------------------------------------------------------------------
 }
 
 impl Drop for Topology {
@@ -562,6 +586,12 @@ impl Default for Topology {
 
 #[derive(Debug)]
 pub enum CpuBindError {
+    Generic(i32, String),
+}
+
+// Added by long 20210707
+#[derive(Debug)]
+pub enum MemBindError {
     Generic(i32, String),
 }
 
@@ -595,6 +625,7 @@ bitflags! {
 }
 
 bitflags! {
+    #[repr(transparent)]
     pub flags MemBindPolicy: i32 {
         /// Reset the memory allocation policy to the system default. Depending on the operating
         /// system, this may correspond to MEMBIND_FIRSTTOUCH (Linux), or MEMBIND_BIND (AIX,
@@ -628,6 +659,61 @@ bitflags! {
         const MEMBIND_MIXED = -1,
     }
 }
+
+// Added by long 20210707 -------------------------------------------------------------
+bitflags! {
+    pub flags MemBindFlags: i32 {
+        /** \brief Set policy for all threads of the specified (possibly
+         * multithreaded) process.  This flag is mutually exclusive with
+         * ::MEMBIND_THREAD.
+         * \hideinitializer */
+        const MEMBIND_PROCESS =       (1<<0),
+
+        /** \brief Set policy for a specific thread of the current process.
+         * This flag is mutually exclusive with ::MEMBIND_PROCESS.
+         * \hideinitializer */
+        const MEMBIND_THREAD =        (1<<1),
+        
+        /** Request strict binding from the OS.  The function will fail if
+         * the binding can not be guaranteed / completely enforced.
+         *
+         * This flag has slightly different meanings depending on which
+         * function it is used with.
+         * \hideinitializer  */
+        const MEMBIND_STRICT =        (1<<2),
+        
+        /** \brief Migrate existing allocated memory.  If the memory cannot
+         * be migrated and the ::MEMBIND_STRICT flag is passed, an error
+         * will be returned.
+         * \hideinitializer  */
+        const MEMBIND_MIGRATE =       (1<<3),
+        
+        /** \brief Avoid any effect on CPU binding.
+         *
+         * On some operating systems, some underlying memory binding
+         * functions also bind the application to the corresponding CPU(s).
+         * Using this flag will cause hwloc to avoid using OS functions that
+         * could potentially affect CPU bindings.  Note, however, that using
+         * NOCPUBIND may reduce hwloc's overall memory binding
+         * support. Specifically: some of hwloc's memory binding functions
+         * may fail with errno set to ENOSYS when used with NOCPUBIND.
+         * \hideinitializer
+         */
+        const MEMBIND_NOCPUBIND =     (1<<4),
+        
+        /** \brief Consider the bitmap argument as a nodeset.
+         *
+         * Functions whose name ends with _nodeset() take a nodeset argument.
+         * Other functions take a bitmap argument that is considered a nodeset
+         * if this flag is given, or a cpuset otherwise.
+         *
+         * Memory binding by CPU set cannot work for CPU-less NUMA memory nodes.
+         * Binding by nodeset should therefore be preferred whenever possible.
+         */
+        const MEMBIND_BYNODESET =     (1<<5),
+    }
+}
+// ------------------------------------------------------------------------------------
 
 #[cfg(test)]
 mod tests {
