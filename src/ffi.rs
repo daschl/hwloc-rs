@@ -6,6 +6,9 @@ use bitmap::IntHwlocBitmap;
 use std::cmp::{PartialOrd, Ordering};
 use support::TopologySupport;
 
+// Added by long 20210707
+use MemBindPolicy;
+
 pub enum HwlocTopology {}
 
 /// Represents the type of a topology object.
@@ -356,8 +359,15 @@ extern "C" {
                                     flags: c_int)
                                     -> c_int;
 
-    // === Memory Binding ===
-
+    // === Memory Binding === Added by long 20210707
+    pub fn hwloc_set_membind(topology: *mut HwlocTopology,
+                             set: *const IntHwlocBitmap,
+                             policy: MemBindPolicy,
+                             flags: c_int) -> c_int;
+    pub fn hwloc_get_membind(topology: *mut HwlocTopology,
+                             set: *mut IntHwlocBitmap,
+                             policy: *mut MemBindPolicy,
+                             flags: c_int) -> c_int;
 
     // === Bitmap Methods ===
     pub fn hwloc_bitmap_alloc() -> *mut IntHwlocBitmap;
